@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-native';
 import { createStore } from 'redux'
-import brewbaseClient from './reducers'
+import brewbaseClientReducer from './reducers'
 import Login from './components/login.js';
 
-let store = createStore(brewbaseClient);
+let store = createStore(brewbaseClientReducer);
 
 export default class BrewbaseClient extends React.Component {
     render() {
