@@ -4,10 +4,9 @@ import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE } from './actio
 import { login } from './utils/api-client';
 
 const authInitialState = {
-    auth: {
-        loggedIn: false,
-        jwt: ''
-    }
+  loggedIn: false,
+  jwt: '',
+  isRequesting: false
 }
 
 function authReducer(state = authInitialState, action) {
@@ -19,19 +18,19 @@ function authReducer(state = authInitialState, action) {
             return Object.assign({}, state, {
                 loggedIn: false,
                 jwt: '',
-                isRequestion: true
+                isRequesting: true
             });
           case AUTH_LOGIN_SUCCESS:
             return Object.assign({}, state, {
                 loggedIn: true,
                 jwt: action.jwt,
-                isRequestion: false
+                isRequesting: false
             });
           case AUTH_LOGIN_FAILURE:
             return Object.assign({}, state, {
                 loggedIn: false,
                 jwt: '',
-                isRequestion: false
+                isRequesting: false
             });
         default:
             return state

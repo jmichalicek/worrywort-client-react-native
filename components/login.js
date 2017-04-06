@@ -18,22 +18,21 @@ export default class Login extends Component {
     // need a listener for the change... not sure if that goes here
     // or if it should go elsewhere
     // http://redux.js.org/docs/api/Store.html#subscribe
+    // or is there another way to get at the current state by making
+    // the component update, etc.?
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log("in shouldcompupdate");
-    console.log('nextState is ' + nextState)
-    console.log('nextState.auth is ' + nextState.auth)
-    // do nav here based on http://stackoverflow.com/a/36910242
-    // but it does not get called after the dispatch
-    if(nextState && nextState.auth && nextState.auth.loggedIn) {
-      console.log('pushing to list');
-      this.props.navigator.push(routeStack[1]);
-      return false;
-    }
-    console.log('what');
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   // do nav here based on http://stackoverflow.com/a/36910242
+  //   // but it does not get called after the dispatch
+  //   if(nextState && nextState.auth && nextState.auth.loggedIn) {
+  //     console.log('pushing to list');
+  //     this.props.navigator.push(routeStack[1]);
+  //     return false;
+  //   }
+  //   console.log('what');
+  //   return true;
+  // }
 
   render() {
     var username = this.state.username;

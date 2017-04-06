@@ -13,7 +13,7 @@ export function loggingIn() {
     return {type: AUTH_LOGGING_IN};
 }
 
-export function loginSuccess(token) {
+export function loginSuccess(jwt) {
     return {type: AUTH_LOGIN_SUCCESS, jwt};
 }
 
@@ -29,11 +29,6 @@ export function doLogin(username, password) {
         // console.log(responseJson);
         var token = responseJson.data.login.token;
         console.log(token);
-        // now I get here ok, but then get an error about
-        // 04-05 23:11:17.870  3088  3120 I ReactNativeJS: { [ReferenceError: Can't find variable: jwt]
-        // 04-05 23:11:17.870  3088  3120 I ReactNativeJS:   line: 52548,
-        // 04-05 23:11:17.870  3088  3120 I ReactNativeJS:   column: 48,
-        // 04-05 23:11:17.870  3088  3120 I ReactNativeJS:   sourceURL: 'http://10.0.2.2:8081/index.android.bundle?platform=android&dev=true&hot=true&minify=false' }
         dispatch(loginSuccess(token));
         // return token;
     })
