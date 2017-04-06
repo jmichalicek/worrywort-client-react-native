@@ -3,36 +3,36 @@ import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-nativ
 import { createStore } from 'redux'
 import brewbaseClientReducer from './reducers'
 import Login from './components/login.js';
+import BatchListScene from './components/scenes/batch-list-scene';
 
 let store = createStore(brewbaseClientReducer);
 
 export default class BrewbaseClient extends React.Component {
-    render() {
-        const routes = [
-            {name: 'login', index: 0},
-        ];
-        // return(
-        //     <Login title="login" username="" password="" store={store} />
-        // );
-        return(
-            <Navigator initialRoute={routes[0]}
-                initialRouteStack={routes}
-                renderScene={this.navigatorRenderScene}
-            />);
-    }
+  render() {
+    const routes = [
+      {name: 'login', index: 0},
+      {name: 'batchList', index: 1}
+    ];
+    return(
+      <Navigator initialRoute={routes[0]}
+        initialRouteStack={routes}
+        renderScene={this.navigatorRenderScene}
+        />);
+  }
 
-    navigatorRenderScene(route, navigator) {
-       switch (route.name) {
-            case 'login':
-                return (
-                    <Login title="login" username="" password="" store={store} />
-                    // <Login navigator={navigator} title="login" store={store} username="" password="" />);
-                    )
-                break;
-            default:
-                break;
-        }
-    }
+  navigatorRenderScene(route, navigator) {
+    switch (route.name) {
+      case 'login':
+        return (<Login title="login" username="" password="" store={store} navigator={navigator} />);
+        break;
+      case 'batchList':
+        console.log("got batchlist route");
+        return (<BatchListScene store={store} navigator={navigator} />);
+        break;
+      default:
+        break;
+      }
+  }
 }
 
 AppRegistry.registerComponent('BrewbaseClient', () => BrewbaseClient);
