@@ -11,28 +11,18 @@ export default class Login extends Component {
     };
   }
 
-  handleLoginButton (username, password, store) {
-    console.log("username: " + username);
-    console.log("password: " + password);
+  handleLoginButton (username, password) {
     this.props.store.dispatch(doLogin(username, password));
-    // need a listener for the change... not sure if that goes here
-    // or if it should go elsewhere
-    // http://redux.js.org/docs/api/Store.html#subscribe
-    // or is there another way to get at the current state by making
-    // the component update, etc.?
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   // do nav here based on http://stackoverflow.com/a/36910242
-  //   // but it does not get called after the dispatch
-  //   if(nextState && nextState.auth && nextState.auth.loggedIn) {
-  //     console.log('pushing to list');
-  //     this.props.navigator.push(routeStack[1]);
-  //     return false;
-  //   }
-  //   console.log('what');
-  //   return true;
-  // }
+  componentWillReceiveProps(nextProps) {
+    // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
+    // TODO: and eventually less error prone routing
+    const routeStack = nextProps.navigator.getCurrentRoutes();
+    if (!this.props.auth.loggedIn && nextProps.auth.loggedIn && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
+      nextProps.navigator.push(routeStack[1]);
+    }
+  }
 
   render() {
     var username = this.state.username;

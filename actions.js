@@ -26,11 +26,8 @@ export function doLogin(username, password) {
     dispatch(loggingIn());
     login(username, password).then((responseJson) => {
         // need to handle errors, but here is good handling
-        // console.log(responseJson);
         var token = responseJson.data.login.token;
-        console.log(token);
         dispatch(loginSuccess(token));
-        // return token;
     })
     .catch((error) => {
         console.log(error);

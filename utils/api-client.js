@@ -34,8 +34,6 @@ export function login(username, password, url = apiUrl) {
     var mutation = {
         query: "mutation doLogin { login(email: \"" + username + "\", password: \"" + password + "\") {token}}"
     }
-    // console.log("mutation is");
-    // console.log(mutation);
     return fetch(url, {
         method: 'POST',
         headers: {
