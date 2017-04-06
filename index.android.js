@@ -1,11 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-native';
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+
 import brewbaseClientReducer from './reducers'
 import Login from './components/login.js';
 import BatchListScene from './components/scenes/batch-list-scene';
 
-let store = createStore(brewbaseClientReducer);
+let store = createStore(
+  brewbaseClientReducer,
+  applyMiddleware(
+    thunk
+  )
+);
 
 export default class BrewbaseClient extends React.Component {
   render() {

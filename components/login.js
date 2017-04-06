@@ -14,7 +14,7 @@ export default class Login extends Component {
   handleLoginButton (username, password, store) {
     console.log("username: " + username);
     console.log("password: " + password);
-    store.dispatch(doLogin(username, password));
+    this.props.store.dispatch(doLogin(username, password));
     // need a listener for the change... not sure if that goes here
     // or if it should go elsewhere
     // http://redux.js.org/docs/api/Store.html#subscribe
@@ -54,7 +54,7 @@ export default class Login extends Component {
             value={this.state.password}
         />
         <Button title="Login" color="blue" accessibilityLabel="Login"
-            onPress={() => this.handleLoginButton(username, password, this.props.store)}
+            onPress={() => this.handleLoginButton(username, password)}
         />
       </View>
     );

@@ -44,15 +44,16 @@ export function login(username, password, url = apiUrl) {
         },
         body: JSON.stringify(mutation)
     })
-    .then((response) => response.json())
-    .then((responseJson) => {
-        // need to handle errors, but here is good handling
-        // console.log(responseJson);
-        var token = responseJson.data.login.token;
-        console.log(token);
-        return token;
-    })
-    .catch((error) => {
-        console.log(error);
-    });
+    .then((response) => response.json());
+    // move the rest elsewhere so that it can be handled by calling code
+    // .then((responseJson) => {
+    //     // need to handle errors, but here is good handling
+    //     // console.log(responseJson);
+    //     var token = responseJson.data.login.token;
+    //     console.log(token);
+    //     return token;
+    // })
+    // .catch((error) => {
+    //     console.log(error);
+    // });
 }

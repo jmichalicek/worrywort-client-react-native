@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { DO_LOGIN, LOGIN_SUCCESS, LOGIN_FAILURE } from './actions';
+import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE } from './actions';
 
 import { login } from './utils/api-client';
 
@@ -12,7 +12,7 @@ const authInitialState = {
 
 function authReducer(state = authInitialState, action) {
     switch (action.type) {
-        case DO_LOGIN:
+        case AUTH_LOGGING_IN:
             // TODO: needs to be a thunk?  http://redux.js.org/docs/api/applyMiddleware.html
             // due to being async api call
             // http://redux.js.org/docs/advanced/AsyncActions.html
@@ -21,13 +21,13 @@ function authReducer(state = authInitialState, action) {
                 jwt: '',
                 isRequestion: true
             });
-          case LOGIN_SUCCESS:
+          case AUTH_LOGIN_SUCCESS:
             return Object.assign({}, state, {
                 loggedIn: true,
                 jwt: action.jwt,
                 isRequestion: false
             });
-          case LOGIN_FAILURE:
+          case AUTH_LOGIN_FAILURE:
             return Object.assign({}, state, {
                 loggedIn: false,
                 jwt: '',
