@@ -9,6 +9,12 @@ export default class Login extends Component {
       username: '',
       password: '',
     };
+
+    // should this go in componentDidMount()?
+    const routeStack = this.props.navigator.getCurrentRoutes();
+    if (this.props.auth.isLoggedIn && this.props.auth.jwt && !this.props.auth.isRequesting) {
+      this.props.navigator.push(routeStack[1]);
+    }
   }
 
   handleLoginButton (username, password) {
@@ -19,7 +25,8 @@ export default class Login extends Component {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
     const routeStack = nextProps.navigator.getCurrentRoutes();
-    if (!this.props.auth.loggedIn && nextProps.auth.loggedIn && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
+    if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
+        && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
       nextProps.navigator.push(routeStack[1]);
     }
   }

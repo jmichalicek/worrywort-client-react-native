@@ -17,13 +17,20 @@ export function loginFailure() {
     return {type: AUTH_LOGIN_FAILURE};
 }
 
-export function doLogin(username, password) {
+export const doLogin = (username, password) => {
   return function (dispatch) {
     dispatch(loggingIn());
     login(username, password).then((responseJson) => {
         // need to handle errors, but here is good handling
         var token = responseJson.data.login.token;
         dispatch(loginSuccess(token));
+        // TODO: This feels dirty.  Is there a better way to have
+        // requestBatchList() dispatched just before the batch list is DISPLAYED
+        //  Could do it in componentWillReceiveProps() if jwt is set, but I do not
+        // want to do it EVERY time the component renders - that seems like it would result
+        // in a LOT of extra API calls even though that does feel like the right place to
+        // make it happen
+        dispatch(requestBatchList(token));
     })
     .catch((error) => {
         console.log(error);
@@ -41,11 +48,10 @@ export function batchListRequest() {
 export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED';
 // export const batchListReceived = () => {{type: BATCH_LIST_RECEIVED}};
 export function batchListReceived() {
-  console.log("CALLED BATCH LIST RECEIVED");
   return {type: BATCH_LIST_RECEIVED};
 }
 export const requestBatchList = (jwt) => {
-  (dispatch) => {
+  return (dispatch) => {
     dispatch(batchListRequest());
     dispatch(batchListReceived());
   }

@@ -20,6 +20,13 @@ export default class BrewbaseClient extends React.Component {
       {name: 'login', index: 0},
       {name: 'batchList', index: 1}
     ];
+
+    // let initialRoute = routes[0];
+    // if(this.props && this.props.auth && this.props.auth.isLoggedIn && this.props.auth.jwt) {
+    //   console.log("setting initial route to batch list");
+    //   initialRoute = routes[1];
+    // }
+
     return(
       <Navigator initialRoute={routes[0]}
         initialRouteStack={routes}

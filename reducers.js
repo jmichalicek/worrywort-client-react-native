@@ -4,7 +4,7 @@ import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE, BATCH_LIST_REQ
 import { login } from './utils/api-client';
 
 const authInitialState = {
-  loggedIn: false,
+  isLoggedIn: false,
   jwt: '',
   isRequesting: false
 }
@@ -13,19 +13,19 @@ function authReducer(state = authInitialState, action) {
   switch (action.type) {
     case AUTH_LOGGING_IN:
       return Object.assign({}, state, {
-        loggedIn: false,
+        isLoggedIn: false,
         jwt: '',
         isRequesting: true
       });
       case AUTH_LOGIN_SUCCESS:
         return Object.assign({}, state, {
-          loggedIn: true,
+          isLoggedIn: true,
           jwt: action.jwt,
           isRequesting: false
         });
       case AUTH_LOGIN_FAILURE:
         return Object.assign({}, state, {
-          loggedIn: false,
+          isLoggedIn: false,
           jwt: '',
           isRequesting: false
         });

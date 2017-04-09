@@ -14,12 +14,13 @@ export default class BatchListScene extends Component {
     console.log("IN constructor");
     console.log(Object.keys(props));
     console.log(Object.keys(props.auth));
-
-    this.loadBatches();
   }
 
-  componentDidMount() {
-    this.loadBatches();
+  componentWillMount() {
+    console.log("In componentWillMount about to load batches");
+    if(this.props.auth.jwt && this.props.auth.isLoggedIn) {
+      this.loadBatches();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -34,6 +35,7 @@ export default class BatchListScene extends Component {
   }
 
   render() {
+    console.log("In render() about to set batches");
     var batches = this.state.batches;
     return (
       <View>
@@ -48,7 +50,9 @@ export default class BatchListScene extends Component {
     console.log(Object.keys(this.props.auth));
     // console.log(this.props.auth.jwt);
     const jwt = this.props.auth.jwt;
+    console.log("dispatching batListRequest");
     this.props.store.dispatch(batchListRequest());
+    console.log("dispatching batchListReceived");
     this.props.store.dispatch(batchListReceived());
     // this.props.store.dispatch(requestBatchList(jwt));
   }
