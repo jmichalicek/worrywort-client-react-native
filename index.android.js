@@ -1,11 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-native';
-import { createStore } from 'redux'
-import brewbaseClientReducer from './reducers'
-import Login from './components/login.js';
-import BatchListScene from './components/scenes/batch-list-scene';
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 
-let store = createStore(brewbaseClientReducer);
+import brewbaseClientReducer from './reducers'
+// import Login from './components/login.js';
+import BatchListScene from './components/scenes/batch-list-scene';
+import LoginLink from './containers/login';
+
+let store = createStore(
+  brewbaseClientReducer,
+  applyMiddleware(
+    thunk
+  )
+);
 
 export default class BrewbaseClient extends React.Component {
   render() {
@@ -23,7 +31,7 @@ export default class BrewbaseClient extends React.Component {
   navigatorRenderScene(route, navigator) {
     switch (route.name) {
       case 'login':
-        return (<Login title="login" username="" password="" store={store} navigator={navigator} />);
+        return (<LoginLink title="login" username="" password="" store={store} navigator={navigator} />);
         break;
       case 'batchList':
         console.log("got batchlist route");

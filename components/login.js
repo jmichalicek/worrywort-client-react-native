@@ -11,28 +11,17 @@ export default class Login extends Component {
     };
   }
 
-  handleLoginButton (username, password, store) {
-    console.log("username: " + username);
-    console.log("password: " + password);
-    store.dispatch(doLogin(username, password));
-    // need a listener for the change... not sure if that goes here
-    // or if it should go elsewhere
-    // http://redux.js.org/docs/api/Store.html#subscribe
+  handleLoginButton (username, password) {
+    this.props.store.dispatch(doLogin(username, password));
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log("in shouldcompupdate");
-    console.log('nextState is ' + nextState)
-    console.log('nextState.auth is ' + nextState.auth)
-    // do nav here based on http://stackoverflow.com/a/36910242
-    // but it does not get called after the dispatch
-    if(nextState && nextState.auth && nextState.auth.loggedIn) {
-      console.log('pushing to list');
-      this.props.navigator.push(routeStack[1]);
-      return false;
+  componentWillReceiveProps(nextProps) {
+    // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
+    // TODO: and eventually less error prone routing
+    const routeStack = nextProps.navigator.getCurrentRoutes();
+    if (!this.props.auth.loggedIn && nextProps.auth.loggedIn && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
+      nextProps.navigator.push(routeStack[1]);
     }
-    console.log('what');
-    return true;
   }
 
   render() {
@@ -54,7 +43,7 @@ export default class Login extends Component {
             value={this.state.password}
         />
         <Button title="Login" color="blue" accessibilityLabel="Login"
-            onPress={() => this.handleLoginButton(username, password, this.props.store)}
+            onPress={() => this.handleLoginButton(username, password)}
         />
       </View>
     );
