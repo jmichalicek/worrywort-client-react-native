@@ -1,6 +1,6 @@
 import React, { Component,  } from 'react';
 import { Image, View, TextInput, Text, Button } from 'react-native';
-import { doLogin } from '../actions';
+import { doLogin } from '../../actions';
 
 export default class Login extends Component {
   constructor(props) {
