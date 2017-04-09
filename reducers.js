@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE } from './actions';
+import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE, BATCH_LIST_REQUEST, BATCH_LIST_RECEIVED } from './actions';
 
 import { login } from './utils/api-client';
 
@@ -34,8 +34,33 @@ function authReducer(state = authInitialState, action) {
   }
 }
 
+const batchListInitialState = {
+  batches: [],
+  isRequesting: false,
+}
+const batchListReducer = (state = batchListInitialState, action) => {
+  switch (action.type) {
+    case BATCH_LIST_REQUEST:
+      return Object.assign({}, state, {
+        isRequesting: true,
+        batches: []
+      });
+    case BATCH_LIST_RECEIVED:
+      return Object.assign({}, state, {
+        isRequesting: false,
+        batches: [
+          {name: 'reducer row 1'},
+          {name: 'reducer row 2'}
+        ]
+      });
+    default:
+      return state;
+  }
+}
+
 // just one now, but there will be more
 const brewbaseClientReducer = combineReducers({
-  auth: authReducer
+  auth: authReducer,
+  batchList: batchListReducer,
 });
 export default brewbaseClientReducer;

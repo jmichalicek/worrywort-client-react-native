@@ -33,7 +33,20 @@ export function doLogin(username, password) {
 }
 
 // batchList actions
-export const BATCH_LIST_REQUEST = 'BATCH_LIST_REQUEST'
-export const batchListRequest = () => {type: BATCH_LIST_REQUEST};
-export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED'
-export const batchListReceived = () => {type: BATCH_LIST_RECEIVED};
+export const BATCH_LIST_REQUEST = 'BATCH_LIST_REQUEST';
+// export const batchListRequest = () => {{type: BATCH_LIST_REQUEST}};
+export function batchListRequest() {
+  return {type: BATCH_LIST_REQUEST};
+}
+export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED';
+// export const batchListReceived = () => {{type: BATCH_LIST_RECEIVED}};
+export function batchListReceived() {
+  console.log("CALLED BATCH LIST RECEIVED");
+  return {type: BATCH_LIST_RECEIVED};
+}
+export const requestBatchList = (jwt) => {
+  (dispatch) => {
+    dispatch(batchListRequest());
+    dispatch(batchListReceived());
+  }
+}
