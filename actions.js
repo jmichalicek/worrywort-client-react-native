@@ -1,14 +1,10 @@
 import { login } from './utils/api-client';
 
+// AUTH actions
 export const AUTH_LOGGING_IN = 'AUTH_LOGGING_IN';
 export const AUTH_LOGIN_SUCCESS = 'AUTH_LOGIN_SUCCESS';
 // may need different failure types - auth vs server errors
 export const AUTH_LOGIN_FAILURE = 'AUTH_LOGIN_FAILURE';
-
-
-// just copied from http://redux.js.org/docs/basics/Actions.html
-// I assume this needs to actually do something, like login
-// and maybe return or set the jwt in a store.
 export function loggingIn() {
     return {type: AUTH_LOGGING_IN};
 }
@@ -36,5 +32,8 @@ export function doLogin(username, password) {
   }
 }
 
-// Review shouldFetchPosts, etc from http://redux.js.org/docs/advanced/AsyncActions.html#actionsjs
-// for possible shouldLogin, etc.
+// batchList actions
+export const BATCH_LIST_REQUEST = 'BATCH_LIST_REQUEST'
+export const batchListRequest = () => {type: BATCH_LIST_REQUEST};
+export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED'
+export const batchListReceived = () => {type: BATCH_LIST_RECEIVED};

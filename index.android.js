@@ -4,9 +4,8 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
 import brewbaseClientReducer from './reducers'
-// import Login from './components/login.js';
-import BatchListScene from './components/scenes/batch-list-scene';
-import LoginLink from './containers/login';
+import BatchList from './containers/batch-list';
+import Login from './containers/login';
 
 let store = createStore(
   brewbaseClientReducer,
@@ -31,11 +30,10 @@ export default class BrewbaseClient extends React.Component {
   navigatorRenderScene(route, navigator) {
     switch (route.name) {
       case 'login':
-        return (<LoginLink title="login" username="" password="" store={store} navigator={navigator} />);
+        return (<Login title="login" username="" password="" store={store} navigator={navigator} />);
         break;
       case 'batchList':
-        console.log("got batchlist route");
-        return (<BatchListScene store={store} navigator={navigator} />);
+        return (<BatchList store={store} navigator={navigator} />);
         break;
       default:
         break;
