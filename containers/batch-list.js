@@ -5,7 +5,7 @@ import BatchList from '../components/scenes/batch-list';
 const mapStateToProps = (state) => {
   return {
     auth: state.auth,
-    batchList: state.batchList
+    //batchList: state.batchList
   }
 }
 

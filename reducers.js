@@ -18,6 +18,7 @@ function authReducer(state = authInitialState, action) {
         isRequesting: true
       });
       case AUTH_LOGIN_SUCCESS:
+        console.log('login success, setting jwt in redux store');
         return Object.assign({}, state, {
           isLoggedIn: true,
           jwt: action.jwt,
@@ -34,33 +35,33 @@ function authReducer(state = authInitialState, action) {
   }
 }
 
-const batchListInitialState = {
-  batches: [],
-  isRequesting: false,
-}
-const batchListReducer = (state = batchListInitialState, action) => {
-  switch (action.type) {
-    case BATCH_LIST_REQUEST:
-      return Object.assign({}, state, {
-        isRequesting: true,
-        batches: []
-      });
-    case BATCH_LIST_RECEIVED:
-      return Object.assign({}, state, {
-        isRequesting: false,
-        batches: [
-          {name: 'reducer row 1'},
-          {name: 'reducer row 2'}
-        ]
-      });
-    default:
-      return state;
-  }
-}
+// const batchListInitialState = {
+//   batches: [],
+//   isRequesting: false,
+// }
+// const batchListReducer = (state = batchListInitialState, action) => {
+//   switch (action.type) {
+//     case BATCH_LIST_REQUEST:
+//       return Object.assign({}, state, {
+//         isRequesting: true,
+//         batches: []
+//       });
+//     case BATCH_LIST_RECEIVED:
+//       return Object.assign({}, state, {
+//         isRequesting: false,
+//         batches: [
+//           {name: 'reducer row 1'},
+//           {name: 'reducer row 2'}
+//         ]
+//       });
+//     default:
+//       return state;
+//   }
+// }
 
 // just one now, but there will be more
 const brewbaseClientReducer = combineReducers({
   auth: authReducer,
-  batchList: batchListReducer,
+  //batchList: batchListReducer,
 });
 export default brewbaseClientReducer;

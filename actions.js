@@ -20,7 +20,9 @@ export function loginFailure() {
 export const doLogin = (username, password) => {
   return function (dispatch) {
     dispatch(loggingIn());
+    console.log('about to call login');
     login(username, password).then((responseJson) => {
+      console.log('got response from login');
         // need to handle errors, but here is good handling
         var token = responseJson.data.login.token;
         dispatch(loginSuccess(token));
@@ -30,7 +32,7 @@ export const doLogin = (username, password) => {
         // want to do it EVERY time the component renders - that seems like it would result
         // in a LOT of extra API calls even though that does feel like the right place to
         // make it happen
-        dispatch(requestBatchList(token));
+        // dispatch(requestBatchList(token));
     })
     .catch((error) => {
         console.log(error);
@@ -39,20 +41,20 @@ export const doLogin = (username, password) => {
   }
 }
 
-// batchList actions
-export const BATCH_LIST_REQUEST = 'BATCH_LIST_REQUEST';
-// export const batchListRequest = () => {{type: BATCH_LIST_REQUEST}};
-export function batchListRequest() {
-  return {type: BATCH_LIST_REQUEST};
-}
-export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED';
-// export const batchListReceived = () => {{type: BATCH_LIST_RECEIVED}};
-export function batchListReceived() {
-  return {type: BATCH_LIST_RECEIVED};
-}
-export const requestBatchList = (jwt) => {
-  return (dispatch) => {
-    dispatch(batchListRequest());
-    dispatch(batchListReceived());
-  }
-}
+// // batchList actions
+// export const BATCH_LIST_REQUEST = 'BATCH_LIST_REQUEST';
+// // export const batchListRequest = () => {{type: BATCH_LIST_REQUEST}};
+// export function batchListRequest() {
+//   return {type: BATCH_LIST_REQUEST};
+// }
+// export const BATCH_LIST_RECEIVED = 'BATCH_LIST_RECEIVED';
+// // export const batchListReceived = () => {{type: BATCH_LIST_RECEIVED}};
+// export function batchListReceived() {
+//   return {type: BATCH_LIST_RECEIVED};
+// }
+// export const requestBatchList = (jwt) => {
+//   return (dispatch) => {
+//     dispatch(batchListRequest());
+//     dispatch(batchListReceived());
+//   }
+// }

@@ -1,59 +1,46 @@
 import React, { Component,  } from 'react';
 import { View, Text, ListView } from 'react-native';
-import Row from '../batch-list-row'
-import { batchListRequest, batchListReceived, requestBatchList } from '../../actions'
+import Row from '../batch-list-row';
+import { batchListRequest, batchListReceived, requestBatchList } from '../../actions';
+import { getAllBatches } from '../../utils/api-client';
 
 export default class BatchListScene extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      // batches: ds.cloneWithRows(['row 1', 'row 2'])
-      batches: ds.cloneWithRows(props.batchList.batches.slice())
+      batches: [],
+      dataSource: ds.cloneWithRows([]) , // use initialState for this?
+      requestingBatches: false,
     };
-    console.log("IN constructor");
-    console.log(Object.keys(props));
-    console.log(Object.keys(props.auth));
   }
 
-  componentWillMount() {
-    console.log("In componentWillMount about to load batches");
-    if(this.props.auth.jwt && this.props.auth.isLoggedIn) {
-      this.loadBatches();
-    }
-  }
-
+  // batches in Redux store version
   componentWillReceiveProps(nextProps) {
-    console.log("IN WILLRECEIVE");
-    console.log(nextProps.batchList.isRequesting);
-    console.log(nextProps.batchList.batches);
-    if (!nextProps.batchList.isRequesting) {
-      this.setState({
-        batches: this.state.batches.cloneWithRows(nextProps.batchList.batches.slice())
-      });
+    // should this go into componentDidUpdate and use this.props?
+    if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.shouldRequestBatches) {
+      this.loadBatches(nextProps.auth.jwt);
     }
   }
 
   render() {
-    console.log("In render() about to set batches");
-    var batches = this.state.batches;
+    var dataSource = this.state.dataSource;
     return (
       <View>
         <Text>Your Batches:</Text>
-        <ListView dataSource={batches} renderRow={(rowData) => <Row {...rowData} />} />
+        <ListView dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
       </View>);
   }
 
-  loadBatches() {
-    console.log('called load batches');
-    console.log(Object.keys(this.props));
-    console.log(Object.keys(this.props.auth));
-    // console.log(this.props.auth.jwt);
-    const jwt = this.props.auth.jwt;
-    console.log("dispatching batListRequest");
-    this.props.store.dispatch(batchListRequest());
-    console.log("dispatching batchListReceived");
-    this.props.store.dispatch(batchListReceived());
-    // this.props.store.dispatch(requestBatchList(jwt));
+  loadBatches(jwt = null) {
+    jwt = jwt || this.props.auth.jwt;
+    getAllBatches(jwt).then((responseJson) => {
+      const retrievedBatches = responseJson.data.batches.slice();
+      this.setState({
+        batches: retrievedBatches,
+        dataSource: this.state.dataSource.cloneWithRows(retrievedBatches),
+        shouldRequestBatches: false
+      });
+    });
   }
 }

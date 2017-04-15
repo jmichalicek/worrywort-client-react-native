@@ -6,6 +6,7 @@ import thunk from 'redux-thunk'
 import brewbaseClientReducer from './reducers'
 import BatchList from './containers/batch-list';
 import Login from './containers/login';
+import { createClient } from './utils/api-client';
 
 let store = createStore(
   brewbaseClientReducer,
@@ -14,18 +15,16 @@ let store = createStore(
   )
 );
 
+// bad idea?
+// apollog seems to be adding a lot of overhead I don't currently need
+// let client = createClient();
+
 export default class BrewbaseClient extends React.Component {
   render() {
     const routes = [
       {name: 'login', index: 0},
-      {name: 'batchList', index: 1}
+      {name: 'batchList', index: 1, shouldRequestBatches: true}
     ];
-
-    // let initialRoute = routes[0];
-    // if(this.props && this.props.auth && this.props.auth.isLoggedIn && this.props.auth.jwt) {
-    //   console.log("setting initial route to batch list");
-    //   initialRoute = routes[1];
-    // }
 
     return(
       <Navigator initialRoute={routes[0]}
@@ -37,10 +36,11 @@ export default class BrewbaseClient extends React.Component {
   navigatorRenderScene(route, navigator) {
     switch (route.name) {
       case 'login':
-        return (<Login title="login" username="" password="" store={store} navigator={navigator} />);
+        return (<Login styles={styles} title="login" username="" password="" store={store} navigator={navigator} />);
         break;
       case 'batchList':
-        return (<BatchList store={store} navigator={navigator} />);
+        // better way to handle shouldRequestBatches?  can passProps override that somehow?
+        return (<BatchList store={store} navigator={navigator} style={styles.container} shouldRequestBatches={route.shouldRequestBatches} />);
         break;
       default:
         break;
@@ -57,6 +57,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  batchList: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 
