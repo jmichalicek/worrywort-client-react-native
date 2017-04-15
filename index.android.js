@@ -6,7 +6,6 @@ import thunk from 'redux-thunk'
 import brewbaseClientReducer from './reducers'
 import BatchList from './containers/batch-list';
 import Login from './containers/login';
-import { createClient } from './utils/api-client';
 
 let store = createStore(
   brewbaseClientReducer,
@@ -62,6 +61,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  login: {
+    flex: 1
+  },
+  login__input: {
+    flex: 1
+  },
+  login__label: {
+    flex: 1
   }
 });
 
