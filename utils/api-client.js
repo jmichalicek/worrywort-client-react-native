@@ -1,34 +1,8 @@
 import Config from 'react-native-config'
-import { gql, ApolloClient, createNetworkInterface, ApolloProvider, graphql } from 'react-apollo';
 
 const apiUrl = Config.API_URL || "http://localhost:4000/graphql/v1/";
 
-
-// // Apollo seems to be a lot of overhead and boilerplate that I do not currently need
-// export function createClient(url = apiUrl) {
-//   const networkInterface = createNetworkInterface({
-//     uri: apiUrl,
-//   });
-//
-//   // get jwt from asyncstorage and THEN do this in the .then()
-//   // should be straightforward if I get async/await working
-//   networkInterface.use([{
-//     applyMiddleware(req, next) {
-//       if (!req.options.headers) {
-//         req.options.headers = {};  // Create the header object if needed.
-//       }
-//
-//       // get the authentication token from local storage if it exists
-//       req.options.headers.authorization = token ? `Bearer ${token}` : null;
-//       next();
-//     }
-//   }]);
-//
-//   return new ApolloClient({
-//     networkInterface: networkInterface,
-//   });
-// }
-// TODO: use Apollo for this stuff
+// TODO: use Apollo for this stuff at some point - for now, just make it work
 
 // this obviously needs to live elsewhere in the end
 // AWAIT IS NOT AWAITING HERE!
