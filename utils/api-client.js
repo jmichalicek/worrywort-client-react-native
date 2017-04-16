@@ -2,6 +2,7 @@ import Config from 'react-native-config'
 
 const apiUrl = Config.API_URL || "http://localhost:4000/graphql/v1/";
 
+// TODO: use Apollo for this stuff at some point - for now, just make it work
 
 // this obviously needs to live elsewhere in the end
 // AWAIT IS NOT AWAITING HERE!
@@ -43,15 +44,20 @@ export function login(username, password, url = apiUrl) {
         body: JSON.stringify(mutation)
     })
     .then((response) => response.json());
-    // move the rest elsewhere so that it can be handled by calling code
-    // .then((responseJson) => {
-    //     // need to handle errors, but here is good handling
-    //     // console.log(responseJson);
-    //     var token = responseJson.data.login.token;
-    //     console.log(token);
-    //     return token;
-    // })
-    // .catch((error) => {
-    //     console.log(error);
-    // });
+}
+
+export function getAllBatches(token, url = apiUrl) {
+  const query = {
+    query: "query getBatches {batches {name, brew_date} }"
+  }
+
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    },
+    body: JSON.stringify(query)
+  }).then((response) => response.json());
 }

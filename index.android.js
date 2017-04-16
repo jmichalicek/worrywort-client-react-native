@@ -4,9 +4,8 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
 import brewbaseClientReducer from './reducers'
-// import Login from './components/login.js';
-import BatchListScene from './components/scenes/batch-list-scene';
-import LoginLink from './containers/login';
+import BatchList from './containers/batch-list';
+import Login from './containers/login';
 
 let store = createStore(
   brewbaseClientReducer,
@@ -15,12 +14,17 @@ let store = createStore(
   )
 );
 
+// bad idea?
+// apollog seems to be adding a lot of overhead I don't currently need
+// let client = createClient();
+
 export default class BrewbaseClient extends React.Component {
   render() {
     const routes = [
       {name: 'login', index: 0},
-      {name: 'batchList', index: 1}
+      {name: 'batchList', index: 1, shouldRequestBatches: true}
     ];
+
     return(
       <Navigator initialRoute={routes[0]}
         initialRouteStack={routes}
@@ -31,11 +35,11 @@ export default class BrewbaseClient extends React.Component {
   navigatorRenderScene(route, navigator) {
     switch (route.name) {
       case 'login':
-        return (<LoginLink title="login" username="" password="" store={store} navigator={navigator} />);
+        return (<Login styles={styles} title="login" username="" password="" store={store} navigator={navigator} />);
         break;
       case 'batchList':
-        console.log("got batchlist route");
-        return (<BatchListScene store={store} navigator={navigator} />);
+        // better way to handle shouldRequestBatches?  can passProps override that somehow?
+        return (<BatchList store={store} navigator={navigator} style={styles.container} shouldRequestBatches={route.shouldRequestBatches} />);
         break;
       default:
         break;
@@ -52,6 +56,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  batchList: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  login: {
+    flex: 1
+  },
+  login__input: {
+    flex: 1
+  },
+  login__label: {
+    flex: 1
+  }
 });
 
 

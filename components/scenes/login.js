@@ -9,6 +9,15 @@ export default class Login extends Component {
       username: '',
       password: '',
     };
+
+    // should this go in componentDidMount()?
+    // or not here at all?  Goal is to avoid showing the login
+    // if the user is already logged in
+    const routeStack = this.props.navigator.getCurrentRoutes();
+    if (this.props.auth.isLoggedIn && this.props.auth.jwt && !this.props.auth.isRequesting) {
+      console.log('pushing navigator to batch list from constructor');
+      this.props.navigator.push(routeStack[1]);
+    }
   }
 
   handleLoginButton (username, password) {
@@ -19,7 +28,9 @@ export default class Login extends Component {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
     const routeStack = nextProps.navigator.getCurrentRoutes();
-    if (!this.props.auth.loggedIn && nextProps.auth.loggedIn && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
+    if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
+        && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
+          console.log('pushing navigator to batch list from componentWillReceiveProps');
       nextProps.navigator.push(routeStack[1]);
     }
   }
@@ -32,13 +43,13 @@ export default class Login extends Component {
       <View>
         <Text>Username:</Text>
         <TextInput
-            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-            onChangeText={(username) => this.setState({username})}
-            value={this.state.username}
+          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          onChangeText={(username) => this.setState({username})}
+          value={this.state.username}
         />
         <Text>Password:</Text>
         <TextInput
-            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
         />
