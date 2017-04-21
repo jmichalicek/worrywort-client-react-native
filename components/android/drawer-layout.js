@@ -18,6 +18,7 @@ export default class NavigationDrawer extends Component {
   }
 
   render() {
+    console.log('in DrawerLayout render');
     // TODO: make this a component and import it, I think, rather than pass as props
     var navigationView = (
       <View style={{flex: 1, backgroundColor: '#fff'}}>
@@ -33,17 +34,16 @@ export default class NavigationDrawer extends Component {
         drawerWidth={this.props.drawerWidth}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={() => navigationView}>
-        <View style={{flex: 1, alignItems: 'center'}}>
-          <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
-          <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
-        </View>
+
+            { this.props.children }
+
       </DrawerLayoutAndroid>
     );
   }
 }
 
 NavigationDrawer.propTypes = {
-  drawerWidth: PropType.number,
+  drawerWidth: PropTypes.number,
   // drawerBackgroundColor: PropTypes.object,
   drawerBackgroundColor: PropTypes.string,
 };

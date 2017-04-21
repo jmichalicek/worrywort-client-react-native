@@ -6,6 +6,7 @@ import thunk from 'redux-thunk'
 import brewbaseClientReducer from './reducers'
 import BatchList from './containers/batch-list';
 import Login from './containers/login';
+import DrawerLayout from './components/android/drawer-layout';
 
 let store = createStore(
   brewbaseClientReducer,
@@ -33,18 +34,23 @@ export default class BrewbaseClient extends React.Component {
   }
 
   navigatorRenderScene(route, navigator) {
+    let toRender = null;
     switch (route.name) {
       case 'login':
-        return (<Login styles={styles} title="login" username="" password="" store={store} navigator={navigator} />);
+        toRender = <Login styles={styles} title="login" username="" password="" store={store} navigator={navigator} />;
         break;
       case 'batchList':
         // better way to handle shouldRequestBatches?  can passProps override that somehow?
-        return (<BatchList store={store} navigator={navigator} style={styles.container} shouldRequestBatches={route.shouldRequestBatches} />);
+        toRender = <BatchList store={store} navigator={navigator} style={styles.container} shouldRequestBatches={route.shouldRequestBatches} />;
         break;
       default:
         break;
-      }
+    }
+    return (<DrawerLayout store={store} navigator={navigator}>
+      {toRender}
+    </DrawerLayout>);
   }
+
 }
 
 AppRegistry.registerComponent('BrewbaseClient', () => BrewbaseClient);
