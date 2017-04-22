@@ -46,7 +46,7 @@ export default class BrewbaseClient extends React.Component {
       default:
         break;
     }
-    return (<DrawerLayout store={store} navigator={navigator}>
+    return (<DrawerLayout store={store} navigator={navigator} styles={styles}>
       {toRender}
     </DrawerLayout>);
   }
@@ -56,11 +56,16 @@ export default class BrewbaseClient extends React.Component {
 AppRegistry.registerComponent('BrewbaseClient', () => BrewbaseClient);
 
 const styles = StyleSheet.create({
+  toolbar: {
+    backgroundColor: '#e9eaed',
+    height: 50,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'stretch',
   },
   batchList: {
     flex: 1,

@@ -1,20 +1,13 @@
 import React, { Component,  } from 'react';
 import { View, DrawerLayoutAndroid, Text } from 'react-native';
-import PropTypes from 'prop-types'; // do I have this and do I need to include it?
+import PropTypes from 'prop-types';
+
+import ToolBar from '../toolbar/toolbar';
 
 export default class NavigationDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-
-    // should this go in componentDidMount()?
-    // or not here at all?  Goal is to avoid showing the login
-    // if the user is already logged in
-    // const routeStack = this.props.navigator.getCurrentRoutes();
-    // if (this.props.auth.isLoggedIn && this.props.auth.jwt && !this.props.auth.isRequesting) {
-    //   console.log('pushing navigator to batch list from constructor');
-    //   this.props.navigator.push(routeStack[1]);
-    // }
   }
 
   render() {
@@ -33,22 +26,37 @@ export default class NavigationDrawer extends Component {
       <DrawerLayoutAndroid
         drawerWidth={this.props.drawerWidth}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
-        renderNavigationView={() => navigationView}>
-
-            { this.props.children }
+        renderNavigationView={() => navigationView}
+        ref={'DRAWER'}>
+          <ToolBar
+            store={this.props.store}
+            navigator={this.props.navigator}
+            styles={this.props.styles}
+            sidebarRef={() => this._setDrawer()} />
+          {this.props.children}
 
       </DrawerLayoutAndroid>
     );
+  }
+
+  // from http://stackoverflow.com/a/38189572/482999
+  _setDrawer() {
+   this.refs['DRAWER'].openDrawer();
   }
 }
 
 NavigationDrawer.propTypes = {
   drawerWidth: PropTypes.number,
-  // drawerBackgroundColor: PropTypes.object,
   drawerBackgroundColor: PropTypes.string,
+  store: PropTypes.object,
+  navigator: PropTypes.object,
+  styles: PropTypes.object,
 };
 
 NavigationDrawer.defaultProps = {
   drawerWidth: 300,
-  drawerBackgroundColor: 'rgba(0,0,0,0.5)'
+  drawerBackgroundColor: 'rgba(0,0,0,0.5)',
+  store: null,
+  navigator: null,
+  styles: {}
 };
