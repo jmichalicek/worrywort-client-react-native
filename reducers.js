@@ -60,8 +60,8 @@ function authReducer(state = authInitialState, action) {
 // }
 
 // just one now, but there will be more
-const brewbaseClientReducer = combineReducers({
+const worrywortClientReducer = combineReducers({
   auth: authReducer,
   //batchList: batchListReducer,
 });
-export default brewbaseClientReducer;
+export default worrywortClientReducer;

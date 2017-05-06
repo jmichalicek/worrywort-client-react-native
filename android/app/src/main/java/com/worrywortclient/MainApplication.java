@@ -1,4 +1,4 @@
-package com.brewbaseclient;
+package com.worrywortclient;
 
 import android.app.Application;
 

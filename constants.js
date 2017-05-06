@@ -1,1 +1,1 @@
-export const APP_TITLE = 'BrewBase';
+export const APP_TITLE = 'WorryWort';

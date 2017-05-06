@@ -3,14 +3,14 @@ import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-nativ
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
-import brewbaseClientReducer from './reducers'
+import worrywortClientReducer from './reducers'
 import BatchList from './containers/batch-list';
 import Login from './containers/login';
 import DrawerLayout from './components/android/drawer-layout';
 import { routes, loggedOutRoutes, loggedInRoutes } from './nav-routes';
 
 let store = createStore(
-  brewbaseClientReducer,
+  worrywortClientReducer,
   applyMiddleware(
     thunk
   )
@@ -20,7 +20,7 @@ let store = createStore(
 // apollog seems to be adding a lot of overhead I don't currently need
 // let client = createClient();
 
-export default class BrewbaseClient extends React.Component {
+export default class WorryWortClient extends React.Component {
   render() {
     // const routes = [
     //   {name: 'login', index: 0, displayName: 'Login'},
@@ -60,7 +60,7 @@ export default class BrewbaseClient extends React.Component {
 
 }
 
-AppRegistry.registerComponent('BrewbaseClient', () => BrewbaseClient);
+AppRegistry.registerComponent('WorryWortClient', () => WorryWortClient);
 
 const styles = StyleSheet.create({
   toolbar: {
