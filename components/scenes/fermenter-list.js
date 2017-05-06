@@ -1,7 +1,7 @@
 import React, { Component,  } from 'react';
 import { View, Text, ListView } from 'react-native';
+import { connect } from 'react-redux';
 import Row from '../batch-list-row';
-// import { batchListRequest, batchListReceived, requestBatchList } from '../../actions';
 import { getAllFermenters } from '../../utils/api-client';
 
 class FermenterList extends Component {
@@ -18,8 +18,17 @@ class FermenterList extends Component {
   // batches in Redux store version
   componentWillReceiveProps(nextProps) {
     // should this go into componentDidUpdate and use this.props?
-    if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.shouldRequestBatches) {
+    if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.shouldRequestFermenters) {
       this.loadFermenters(nextProps.auth.jwt);
+    }
+  }
+
+  componentDidMount() {
+    // mounting happens different with react-native 0.44 and react-navigation
+    // so we need to look these up here or maybe just do it in render?  that way
+    // a little loading thing could be displayed
+    if (this.props.auth.jwt && !this.state.isRequesting && this.props.shouldRequestFermenters) {
+      this.loadFermenters(this.props.auth.jwt);
     }
   }
 
@@ -45,15 +54,15 @@ class FermenterList extends Component {
   }
 }
 
-import { connect } from 'react-redux';
 // import BatchList from '../components/scenes/batch-list';
 
 const mapStateToProps = (state) => {
   return {
     auth: state.auth,
+    navigation: state.navigation
     //batchList: state.batchList
   }
-}
+};
 
 // const BatchListLink = connect(
 //   mapStateToProps

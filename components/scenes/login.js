@@ -1,37 +1,38 @@
 import React, { Component,  } from 'react';
+import { connect } from 'react-redux';
 import { Image, View, TextInput, Text, Button } from 'react-native';
 import { doLogin } from '../../actions';
 import { ViewRoutes } from '../../constants';
+import { NavigationActions } from 'react-navigation';
 
-export default class Login extends Component {
+class Login extends Component {
+  static navigationOptions = {
+    title: 'WorryWort - Login',
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       username: '',
       password: '',
     };
-
-    // should this go in componentDidMount()?
-    // or not here at all?  Goal is to avoid showing the login
-    // if the user is already logged in
-    const routeStack = this.props.navigator.getCurrentRoutes();
-    if (this.props.auth.isLoggedIn && this.props.auth.jwt && !this.props.auth.isRequesting) {
-      this.props.navigator.push(ViewRoutes.BATCH_LIST);
-    }
   }
 
   handleLoginButton (username, password) {
-    this.props.store.dispatch(doLogin(username, password));
+    // this.props.dispatch due to how react-navigation handles redux
+    this.props.dispatch(doLogin(username, password));
   }
 
   componentWillReceiveProps(nextProps) {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
-    const routeStack = nextProps.navigator.getCurrentRoutes();
+    // const routeStack = nextProps.navigator.getCurrentRoutes();
     if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
         && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
-          console.log('pushing navigator to batch list from componentWillReceiveProps');
-      nextProps.navigator.push(routeStack[1]);
+      // TODO: Can I abstract the dispatching of navigate to just be a navTo(routeName)
+      //  stored somewhere central?
+      nextProps.dispatch(NavigationActions.navigate(
+        { routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} }));
     }
   }
 
@@ -60,3 +61,12 @@ export default class Login extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+    navigation: state.navigation
+  }
+};
+
+export default connect(mapStateToProps)(Login);

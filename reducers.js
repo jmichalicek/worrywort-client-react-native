@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE, BATCH_LIST_REQUEST, BATCH_LIST_RECEIVED } from './actions';
-
+import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE} from './actions';
+import { AppNavigator } from './appnavigator'
 import { login } from './utils/api-client';
 
 const authInitialState = {
@@ -35,33 +35,30 @@ function authReducer(state = authInitialState, action) {
   }
 }
 
-// const batchListInitialState = {
-//   batches: [],
-//   isRequesting: false,
-// }
-// const batchListReducer = (state = batchListInitialState, action) => {
-//   switch (action.type) {
-//     case BATCH_LIST_REQUEST:
-//       return Object.assign({}, state, {
-//         isRequesting: true,
-//         batches: []
-//       });
-//     case BATCH_LIST_RECEIVED:
-//       return Object.assign({}, state, {
-//         isRequesting: false,
-//         batches: [
-//           {name: 'reducer row 1'},
-//           {name: 'reducer row 2'}
-//         ]
-//       });
-//     default:
-//       return state;
-//   }
-// }
 
-// just one now, but there will be more
+const secondAction = AppNavigator.router.getActionForPathAndParams('login');
+const navInitialState = AppNavigator.router.getStateForAction(secondAction);
+
+function navReducer (state = navInitialState, action) {
+  console.log('action is ');
+  console.log(action);
+  const nextState = AppNavigator.router.getStateForAction(action, state);
+  // let nextState;
+  // switch (action.type) {
+  //   case 'login':
+  //     nextState = AppNavigator.router.getStateForAction(NavigationActions.back(), state);
+  //     break;
+  //   default:
+  //      nextState = AppNavigator.router.getStateForAction(action, state);
+  //      break;
+  // }
+  // Simply return the original `state` if `nextState` is null or undefined.
+  return nextState || state;
+};
+
 const worrywortClientReducer = combineReducers({
   auth: authReducer,
+  nav: navReducer,
   //batchList: batchListReducer,
 });
 export default worrywortClientReducer;

@@ -4,7 +4,7 @@ import Login from '../components/scenes/login';
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   }
 }
 
