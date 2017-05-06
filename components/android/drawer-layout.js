@@ -1,27 +1,57 @@
 import React, { Component,  } from 'react';
-import { View, DrawerLayoutAndroid, Text } from 'react-native';
+import { View, DrawerLayoutAndroid, Text, FlatList, TouchableHighlight } from 'react-native';
 import PropTypes from 'prop-types';
 
 import ToolBar from '../toolbar/toolbar';
+import { routes, loggedOutRoutes, loggedInRoutes } from '../../nav-routes'; // or should I pass thse in?
 
 export default class NavigationDrawer extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    // if (this.props && this.props.auth && this.props.auth.isLoggedIn) {
+    //   navItems = loggedInRoutes.slice();
+    // } else {
+    //   navItems = loggedOutRoutes.slice();
+    // }
+    // this.state = {
+    //   navItems: navItems
+    // };
   }
 
+  _onPress(route) {
+    /* If navigating to a different route, do it
+     * If navigating to the current view, just close the drawer
+     */
+    if (route !== this.props.currentRoute) {
+      this.props.navigator.push(route);
+    } else {
+      this.refs['DRAWER'].closeDrawer();
+    }
+  }
   render() {
-    console.log('in DrawerLayout render');
-    // TODO: make this a component and import it, I think, rather than pass as props
-    var navigationView = (
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I am in the Drawer!</Text>
+    // TODO: Seems like FlatList should work here, but it's blowing up
+    // let navigationView = (
+    //   <FlatList
+    //     data={this.state.navItems}
+    //     renderItem={
+    //       ({item}) => <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>{item.displayName}</Text>
+    //     }
+    //   />
+    // );
+    let rows = [];
+    this.props.navItems.forEach((item) => {
+      rows.push(
+        <TouchableHighlight onPress={this._onPress.bind(this, item)}>
+          <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>{item.displayName}</Text>
+        </TouchableHighlight>
+      );
+    });
+    const navigationView = (
+      <View>
+        {rows}
       </View>
     );
 
-    // TODO: Pass the actual view in as props to go inside the DrawLayoutAndroid?
-    // or can I keep them separate and JUST have this attached to a nav toolbar
-    // which I will pass around.
     return (
       <DrawerLayoutAndroid
         drawerWidth={this.props.drawerWidth}

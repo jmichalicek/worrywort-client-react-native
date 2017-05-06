@@ -35,7 +35,7 @@ class ToolBar extends Component {
         style={this.props.styles.toolbar}
         onIconClicked={this.props.sidebarRef}
         navIcon={nativeImageSource({ android: 'ic_menu_black_24dp', width: 48, height: 48 })}
-        />
+      />
     );
   }
 };
