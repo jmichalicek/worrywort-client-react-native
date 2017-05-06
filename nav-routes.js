@@ -4,7 +4,8 @@ export const loggedOutRoutes = [
 ]
 
 export const loggedInRoutes = [
-  {name: 'batchList', index: 1, shouldRequestBatches: true, displayName: 'Batches'}
+  {name: 'batchList', index: 1, shouldRequestBatches: true, displayName: 'Batches'},
+  {name: 'fermenterList', index: 2, shouldRequestFermenters: true, displayName: 'Fermenters'}
 ]
 
 export const routes = [

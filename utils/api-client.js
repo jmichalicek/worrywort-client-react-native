@@ -61,3 +61,19 @@ export function getAllBatches(token, url = apiUrl) {
     body: JSON.stringify(query)
   }).then((response) => response.json());
 }
+
+export function getAllFermenters(token, url = apiUrl) {
+  const query = {
+    query: "query getFermenters {fermenters {name, id} }"
+  }
+
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    },
+    body: JSON.stringify(query)
+  }).then((response) => response.json());
+}

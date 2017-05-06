@@ -1,6 +1,7 @@
 import React, { Component,  } from 'react';
 import { Image, View, TextInput, Text, Button } from 'react-native';
 import { doLogin } from '../../actions';
+import { ViewRoutes } from '../../constants';
 
 export default class Login extends Component {
   constructor(props) {
@@ -15,8 +16,7 @@ export default class Login extends Component {
     // if the user is already logged in
     const routeStack = this.props.navigator.getCurrentRoutes();
     if (this.props.auth.isLoggedIn && this.props.auth.jwt && !this.props.auth.isRequesting) {
-      console.log('pushing navigator to batch list from constructor');
-      this.props.navigator.push(routeStack[1]);
+      this.props.navigator.push(ViewRoutes.BATCH_LIST);
     }
   }
 
