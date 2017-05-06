@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class BrewbaseClient extends Component {
+export default class WorryWortClient extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('BrewbaseClient', () => BrewbaseClient);
+AppRegistry.registerComponent('WorryWortClient', () => WorryWortClient);
