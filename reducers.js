@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE} from './actions';
 import { AppNavigator } from './appnavigator'
 import { login } from './utils/api-client';
+import { NavigationActions } from 'react-navigation'
 
 const authInitialState = {
   isLoggedIn: false,
@@ -18,7 +19,6 @@ function authReducer(state = authInitialState, action) {
         isRequesting: true
       });
       case AUTH_LOGIN_SUCCESS:
-        console.log('login success, setting jwt in redux store');
         return Object.assign({}, state, {
           isLoggedIn: true,
           jwt: action.jwt,
@@ -39,19 +39,22 @@ function authReducer(state = authInitialState, action) {
 const secondAction = AppNavigator.router.getActionForPathAndParams('login');
 const navInitialState = AppNavigator.router.getStateForAction(secondAction);
 
-function navReducer (state = navInitialState, action) {
+function navReducer (state=navInitialState, action) {
   console.log('action is ');
   console.log(action);
-  const nextState = AppNavigator.router.getStateForAction(action, state);
-  // let nextState;
-  // switch (action.type) {
-  //   case 'login':
-  //     nextState = AppNavigator.router.getStateForAction(NavigationActions.back(), state);
-  //     break;
-  //   default:
-  //      nextState = AppNavigator.router.getStateForAction(action, state);
-  //      break;
-  // }
+  // const nextState = AppNavigator.router.getStateForAction(action, state);
+  let nextState;
+  switch (action.type) {
+    // This case is a bit hacky and magical.  I got it from console.log output
+    // by logging action when the app started.  Without it we get weird stuff.
+    // Like a navigate back option on the very first screen displayed... dumb.
+    case '@@redux/INIT':
+      nextState = AppNavigator.router.getStateForAction(NavigationActions.back(), state);
+      break;
+    default:
+       nextState = AppNavigator.router.getStateForAction(action, state);
+       break;
+  }
   // Simply return the original `state` if `nextState` is null or undefined.
   return nextState || state;
 };

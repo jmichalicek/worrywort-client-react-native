@@ -5,6 +5,10 @@ import Row from '../batch-list-row';
 import { getAllFermenters } from '../../utils/api-client';
 
 class FermenterList extends Component {
+  static navigationOptions = {
+    title: 'Your Fermenters',
+  };
+
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});

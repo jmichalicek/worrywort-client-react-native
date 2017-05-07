@@ -7,7 +7,7 @@ import { getAllBatches } from '../../utils/api-client';
 
 class BatchList extends Component {
   static navigationOptions = {
-    title: 'WorryWort - Your Batches',
+    title: 'Your Batches',
   };
 
   constructor(props) {

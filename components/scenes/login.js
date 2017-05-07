@@ -7,7 +7,7 @@ import { NavigationActions } from 'react-navigation';
 
 class Login extends Component {
   static navigationOptions = {
-    title: 'WorryWort - Login',
+    title: 'Login',
   };
 
   constructor(props) {

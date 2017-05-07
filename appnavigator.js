@@ -4,18 +4,61 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { addNavigationHelpers, DrawerNavigator, StackNavigator } from "react-navigation";
+import { addNavigationHelpers, DrawerNavigator, StackNavigator, TabNavigator } from "react-navigation";
 
 import BatchList from './containers/batch-list';
 import FermenterList from './components/scenes/fermenter-list';
 import Login from './containers/login';
 
-export const AppNavigator = StackNavigator({
+const Stack = {
   login: { screen: Login },
-  fermenterList: { screen: FermenterList },
-  batchList: { screen: BatchList }
-});
+  batchList: { screen: BatchList },
+  fermenterList: { screen: FermenterList }
+};
 
+export const DrawerRoutes = {
+	FirstViewStack: {
+		name: 'FirstViewStack',
+		screen: StackNavigator(Stack, {initialRouteName: 'login'})
+	},
+	SecondViewStack: {
+		name: 'SecondViewStack',
+		screen: StackNavigator(Stack, { initialRouteName: 'batchList' })
+	},
+	ThirdViewStack: {
+		name: 'ThirdViewStack',
+		screen: StackNavigator(Stack, { initialRouteName: 'fermenterList' })
+	},
+};
+
+// export const AppNavigator =
+// 	StackNavigator({
+// 		Drawer: {
+// 			name: 'Drawer',
+// 			screen: DrawerNavigator(
+// 				DrawerRoutes,
+// 			),
+// 		},
+//     ...Stack
+// 	},
+// 	{
+// 		headerMode: 'none'
+// 	}
+// );
+
+// export const AppNavigator =
+// 	TabNavigator(
+//     Tabs: {
+//       name: 'Stack',
+//       screen: StackNavigator(Stack, {initialRouteName: 'login'})
+//     }
+// 	);
+
+
+export const AppNavigator =
+  DrawerNavigator(
+    DrawerRoutes
+  )
 const AppWithNavigationState = ({ dispatch, nav }) => (
   <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />
 );
