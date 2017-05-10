@@ -1,7 +1,7 @@
 import React, { Component,  } from 'react';
 import { View, Text, ListView } from 'react-native';
 import { connect } from 'react-redux';
-import Row from '../batch-list-row';
+import Row from '../fermenter-list-row';
 import { getAllFermenters } from '../../utils/api-client';
 
 class FermenterList extends Component {
@@ -15,14 +15,14 @@ class FermenterList extends Component {
     this.state = {
       fermenters: [],
       dataSource: ds.cloneWithRows([]) , // use initialState for this?
-      requestingFermenters: false,
+      isRequesting: false,
     };
   }
 
   // batches in Redux store version
   componentWillReceiveProps(nextProps) {
-    // should this go into componentDidUpdate and use this.props?
-    if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.shouldRequestFermenters) {
+    //TODO: May need to be smarter about requesting fermenters.   Maybe a "shouldRequest"
+    if (nextProps.auth.jwt && !this.state.isRequesting && this.props.fermenters.lengh < 1) {
       this.loadFermenters(nextProps.auth.jwt);
     }
   }
@@ -31,7 +31,7 @@ class FermenterList extends Component {
     // mounting happens different with react-native 0.44 and react-navigation
     // so we need to look these up here or maybe just do it in render?  that way
     // a little loading thing could be displayed
-    if (this.props.auth.jwt && !this.state.isRequesting && this.props.shouldRequestFermenters) {
+    if (this.props.auth.jwt && !this.state.isRequesting) {
       this.loadFermenters(this.props.auth.jwt);
     }
   }
@@ -41,18 +41,19 @@ class FermenterList extends Component {
     return (
       <View>
         <Text>Your Fermenters:</Text>
-        <ListView dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
+        <ListView dataSource={dataSource} renderRow={(rowData) => <Row fermenter={rowData} />} />
       </View>);
   }
 
   loadFermenters(jwt = null) {
+    this.setState({isRequesting: true});
     jwt = jwt || this.props.auth.jwt;
     getAllFermenters(jwt).then((responseJson) => {
-      const retrievedFermenters = responseJson.data.batches.slice();
+      const retrievedFermenters = responseJson.data.fermenters.slice();
       this.setState({
         fermenters: retrievedFermenters,
         dataSource: this.state.dataSource.cloneWithRows(retrievedFermenters),
-        shouldRequestFermenters: false
+        isRequesting: false
       });
     });
   }

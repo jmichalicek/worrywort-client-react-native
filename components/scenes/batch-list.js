@@ -16,7 +16,7 @@ class BatchList extends Component {
     this.state = {
       batches: [],
       dataSource: ds.cloneWithRows([]) , // use initialState for this?
-      requestingBatches: false,
+      isRequesting: false,
     };
   }
 
