@@ -7,7 +7,8 @@ import {
   Text,
   ToolbarAndroid
 } from 'react-native';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
+import {PropTypes} from 'react';
 
 import { APP_TITLE } from '../../constants';
 
