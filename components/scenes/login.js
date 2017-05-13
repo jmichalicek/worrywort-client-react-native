@@ -2,7 +2,7 @@ import React, { Component,  } from 'react';
 import { connect } from 'react-redux';
 import { Image, View, TextInput, Text, Button } from 'react-native';
 import { doLogin } from '../../actions';
-import { ViewRoutes } from '../../constants';
+import { LoginAttemptStatus, ViewRoutes, styles } from '../../constants';
 import { NavigationActions } from 'react-navigation';
 
 class Login extends Component {
@@ -26,6 +26,7 @@ class Login extends Component {
   componentWillReceiveProps(nextProps) {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
+
     if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
         && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
 
@@ -51,9 +52,15 @@ class Login extends Component {
   render() {
     var username = this.state.username;
     var password = this.state.password;
+    let errorDisplay = null;
+    if (this.props.auth.loginAttemptStatus === LoginAttemptStatus.FAIL) {
+      console.log('ERROR');
+      errorDisplay = <View style={styles.error}><Text>Error logging in</Text></View>;
+    }
 
     return (
       <View>
+        { errorDisplay }
         <Text>Username:</Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}

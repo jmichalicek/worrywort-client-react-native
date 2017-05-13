@@ -75,8 +75,10 @@ AppWithNavigationState.propTypes = {
   nav: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  nav: state.nav,
-});
+const mapStateToProps = state => {
+  return {
+    nav: state.nav,
+  };
+}
 
 export default connect(mapStateToProps)(AppWithNavigationState);
