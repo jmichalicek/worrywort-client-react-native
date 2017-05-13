@@ -30,6 +30,18 @@ const apiUrl = Config.API_URL || "http://localhost:4000/graphql/v1/";
 //     }
 // }
 
+function makeRequest(query, token, url) {
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    },
+    body: JSON.stringify(query)
+  });
+}
+
 export function login(username, password, url = apiUrl) {
   // TODO: Handle errors properly!  here or in calling code
     var mutation = {
@@ -60,4 +72,33 @@ export function getAllBatches(token, url = apiUrl) {
     },
     body: JSON.stringify(query)
   }).then((response) => response.json());
+}
+
+export function getAllFermenters(token, url = apiUrl) {
+  const query = {
+    query: "query getFermenters {fermenters {name, id, description, type, units, volume } }"
+  }
+  return makeRequest(query, token, url).then((response) => response.json());
+}
+
+export function getFermenter(fermenterId, token, url = apiUrl) {
+  const query = {
+    query: "query getFermenter($id: ID!) { fermenter(id: $id) { id, name, description, type, units, volume }}",
+    variables: {"id": fermenterId}
+  }
+
+  return makeRequest(query, token, url).then((response) => response.json());
+};
+
+export function addFermenter(fermenter, token, url=apiUrl) {
+  const mutation = {
+    "query": "mutation putFermenter(description: String, $name: String!, $type: Int!, $units: Int!, $volume: Float!) {createFermenter(description: $description, name: $name, type: $type, units: $units, volume: $volume) { id }",
+    "variables": {
+      "name": fermenter.name,
+      "description": fermenter.description,
+      "type": fermenter.type,
+      "units": fermenter.units,
+      "volume": fermenter.volume
+    }
+}
 }

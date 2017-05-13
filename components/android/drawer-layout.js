@@ -1,6 +1,7 @@
 import React, { Component,  } from 'react';
 import { View, DrawerLayoutAndroid, Text, FlatList, TouchableHighlight } from 'react-native';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+import {PropTypes} from 'react';
 
 import ToolBar from '../toolbar/toolbar';
 import { routes, loggedOutRoutes, loggedInRoutes } from '../../nav-routes'; // or should I pass thse in?

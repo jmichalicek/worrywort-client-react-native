@@ -20,9 +20,7 @@ export function loginFailure() {
 export const doLogin = (username, password) => {
   return function (dispatch) {
     dispatch(loggingIn());
-    console.log('about to call login');
     login(username, password).then((responseJson) => {
-      console.log('got response from login');
         // need to handle errors, but here is good handling
         var token = responseJson.data.login.token;
         dispatch(loginSuccess(token));
