@@ -1,13 +1,40 @@
-import React, { Component,  } from 'react';
-import { View, Text, ListView } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, ListView, Button } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../fermenter-list-row';
+import { NavigationActions } from 'react-navigation';
+
+import { ViewRoutes } from '../../constants';
 import { getAllFermenters } from '../../utils/api-client';
 
+
 class FermenterList extends Component {
-  static navigationOptions = {
+  static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Your Fermenters',
-  };
+    headerRight: <Button title="Add" onPress={() =>{
+      navigation.navigate('fermenterEdit')}}/>
+  });
+
+  // static navigationOptions = ({ navigation, screenProps }) => ({
+  //   title: 'Your Fermenters',
+  //   headerRight: <Button title="Add" onPress={() =>{
+  //     navigation.dispatch(
+  //       NavigationActions.navigate(
+  //         { routeName: ViewRoutes.FERMENTER_EDIT }
+  //       )
+  //     )}}/>
+  // });
+
+  // static navigationOptions = ({ navigation, screenProps }) => ({
+  //   title: 'Your Fermenters',
+  //   headerRight: <Button  />,
+  // });
+
+  // static navigationOptions = {
+  //     title: 'Your Fermenters',
+  //     // headerRight: (<Button  />),
+  //
+  // }
 
   constructor(props) {
     super(props);
@@ -36,11 +63,14 @@ class FermenterList extends Component {
     }
   }
 
+  _onClickAddButton() {
+
+  }
+
   render() {
     var dataSource = this.state.dataSource;
     return (
       <View>
-        <Text>Your Fermenters:</Text>
         <ListView dataSource={dataSource} renderRow={(rowData) => <Row fermenter={rowData} />} />
       </View>);
   }

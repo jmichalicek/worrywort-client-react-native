@@ -8,14 +8,21 @@ import { addNavigationHelpers, DrawerNavigator, StackNavigator, TabNavigator } f
 
 import BatchList from './containers/batch-list';
 import FermenterList from './components/scenes/fermenter-list';
+import FermenterEdit from './components/scenes/edit-fermenter';
 import Login from './containers/login';
 
 const Stack = {
   login: { screen: Login },
   batchList: { screen: BatchList },
-  fermenterList: { screen: FermenterList }
+  fermenterList: { screen: FermenterList },
+  fermenterEdit: { screen: FermenterEdit }
 };
 
+// TODO: May need two different DrawerRoutes setups
+// one for when need to log in which just has the login
+// and potential upcoming config/settings
+// and second which gets swapped in after login using navigation.reset()
+// https://reactnavigation.org/docs/navigators/navigation-actions#Reset
 export const DrawerRoutes = {
 	FirstViewStack: {
 		name: 'FirstViewStack',

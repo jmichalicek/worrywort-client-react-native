@@ -26,13 +26,25 @@ class Login extends Component {
   componentWillReceiveProps(nextProps) {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
-    // const routeStack = nextProps.navigator.getCurrentRoutes();
     if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
         && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
-      // TODO: Can I abstract the dispatching of navigate to just be a navTo(routeName)
-      //  stored somewhere central?
-      nextProps.dispatch(NavigationActions.navigate(
-        { routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} }));
+
+      // Seems like the navAction with reset should work
+      // to put this next view on a stack with nothign below it
+      nextProps.dispatch(
+          NavigationActions.navigate({ routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} })
+      );
+
+      // const navAction = NavigationOptions.reset({
+      //   index: 0,
+      //   actions: [
+      //     NavigationActions.navigate(
+      //       {routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} }
+      //     )
+      //   ]
+      // });
+      // nextProps.dispatch(navAction);
+
     }
   }
 
