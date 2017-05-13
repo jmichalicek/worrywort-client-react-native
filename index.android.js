@@ -10,7 +10,6 @@ import AppWithNavigationState from './appnavigator'
 import BatchList from './components/scenes/batch-list';
 import FermenterList from './components/scenes/fermenter-list';
 import Login from './components/scenes/login';
-import DrawerLayout from './components/android/drawer-layout';
 import { ViewRoutes } from './constants';
 
 // bad idea?
