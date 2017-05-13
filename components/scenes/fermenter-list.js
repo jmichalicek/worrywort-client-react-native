@@ -9,21 +9,21 @@ import { getAllFermenters } from '../../utils/api-client';
 
 
 class FermenterList extends Component {
-  static navigationOptions = ({ navigation, screenProps }) => ({
-    title: 'Your Fermenters',
-    headerRight: <Button title="Add" onPress={() =>{
-      navigation.navigate('fermenterEdit')}}/>
-  });
-
   // static navigationOptions = ({ navigation, screenProps }) => ({
   //   title: 'Your Fermenters',
   //   headerRight: <Button title="Add" onPress={() =>{
-  //     navigation.dispatch(
-  //       NavigationActions.navigate(
-  //         { routeName: ViewRoutes.FERMENTER_EDIT }
-  //       )
-  //     )}}/>
+  //     navigation.navigate('fermenterEdit')}}/>
   // });
+
+  static navigationOptions = ({ navigation, screenProps }) => ({
+    title: 'Your Fermenters',
+    headerRight: <Button title="Add" onPress={() =>{
+      navigation.dispatch(
+        NavigationActions.navigate(
+          { routeName: ViewRoutes.FERMENTER_EDIT }
+        )
+      )}}/>
+  });
 
   // static navigationOptions = ({ navigation, screenProps }) => ({
   //   title: 'Your Fermenters',

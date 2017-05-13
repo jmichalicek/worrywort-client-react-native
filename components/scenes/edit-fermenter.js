@@ -7,9 +7,13 @@ import { getFermenter, addFermenter } from '../../utils/api-client';
 class EditFermenter extends Component {
   // TODO: Make this a function, get at whether we have a fermenter or not and set to
   // Adding or Editing Fermenter
-  static navigationOptions = {
+  // no headerRight button.  react-navigation does not implement nav in a way which
+  // sanely lets you put a button, such as a save button, which needs to operate on
+  // current state/props. :
+  static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Fermenter',
-  };
+    // headerRight: <Button title={"Save"} onPress={(navigation) => {console.log(navigation.state)}} />
+  });
 
   constructor(props) {
     super(props);
@@ -66,6 +70,21 @@ class EditFermenter extends Component {
     this.setState({isActive: isActive});
   }
 
+  saveDetails = () => {
+    console.log('SAVING');
+    const fermenter = {
+      name: this.state.name,
+      volume: this.state.volume,
+      type: this.state.type,
+      units: this.state.units,
+      isActive: this.state.isActive,
+      description: this.state.description
+    }
+    addFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
+      console.log(responseJson);
+    });
+  };
+
   render() {
     var dataSource = this.state.dataSource;
     // TODO: better handling of fermenter type choices
@@ -112,6 +131,8 @@ class EditFermenter extends Component {
         <Switch onValueChange={this.setIsActive}
           style={{marginBottom: 10}}
           value={this.state.isActive} />
+
+        <Button title="Save" onPress={this.saveDetails} />
       </View>);
   }
 
@@ -127,11 +148,21 @@ class EditFermenter extends Component {
   }
 }
 
+// EditFermenter.navigationOptions = props => {
+//   const {navigation} = props;
+//   const {state, setParams} = navigation;
+//   const {params} = state;
+//   return {
+//     title: 'Fermenter',
+//     headerRight: <Button title={"Save"} onPress={(navigation) => {console.log(params)}} />
+//   }
+// };
+
 EditFermenter.propTypes = {
-  fermenterId: PropTypes.Integer,
+  fermenterId: PropTypes.number,
   fermenter: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
-  nav: PropTypes.object.isRequired,
+  // nav: PropTypes.object.isRequired,
 };
 
 // import BatchList from '../components/scenes/batch-list';
@@ -142,7 +173,7 @@ const mapStateToProps = (state) => {
   return {
     auth: state.auth,
     navigation: state.navigation,
-    nav: state.nav,
+    // nav: state.nav,
   }
 };
 
