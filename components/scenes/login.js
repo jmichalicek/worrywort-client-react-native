@@ -59,9 +59,6 @@ class Login extends Component {
   };
 
   render() {
-    // console.log('LOGIN')
-    // console.log(this.props);
-    // console.log('END LOGIN\n\n')
     var username = this.state.username;
     var password = this.state.password;
     let errorDisplay = null;

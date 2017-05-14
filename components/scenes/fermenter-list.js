@@ -39,7 +39,8 @@ class FermenterList extends Component {
   constructor(props) {
     super(props);
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}
+    );
     this.state = {
       fermenters: [],
       dataSource: ds.cloneWithRows([]) , // use initialState for this?
@@ -68,15 +69,20 @@ class FermenterList extends Component {
 
   }
 
+  _renderListRow(rowData) {
+    return <Row fermenter={rowData} />
+  }
+
   render() {
     var dataSource = this.state.dataSource;
     return (
       <View>
-        <ListView dataSource={dataSource} renderRow={(rowData) => <Row fermenter={rowData} />} />
+        <ListView dataSource={dataSource} enableEmptySections={true} renderRow={this._renderListRow} />
       </View>);
   }
 
   loadFermenters(jwt = null) {
+    console.log('LOADING FERMENTERS');
     this.setState({isRequesting: true});
     jwt = jwt || this.props.auth.jwt;
     getAllFermenters(jwt).then((responseJson) => {
@@ -96,7 +102,7 @@ const mapStateToProps = (state, props) => {
   return {
     auth: state.auth,
     navigation: state.navigation,
-    ...props
+    ...props.navigation.state.params
   }
 };
 

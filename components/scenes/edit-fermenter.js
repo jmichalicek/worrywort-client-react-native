@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../batch-list-row';
-import { getFermenter, addFermenter } from '../../utils/api-client';
+import { getFermenter, addFermenter, updateFermenter } from '../../utils/api-client';
 import { FermenterTypes, VolumeUnits, styles } from '../../constants';
 
 class EditFermenter extends Component {
@@ -22,13 +22,23 @@ class EditFermenter extends Component {
       name: '', volume: '', type: 'BUCKET', units: 'GALLONS',
       isActive: true
     }
-    const f = this.props.fermenter || defaultFermenter;
+    let f = this.props.fermenter || defaultFermenter;
+    // TODO:
+    // hacky kludge.  Finally a reason to use a real graphql client
+    // to autoconvert these as they are requested elsewhere
+    // doing this then requires using toString() when setting the value on the form field
+    // and from there it all blows up.
+    // if (typeof f.volume === "string") {
+    //   f.volume = parseFloat(f.volume);
+    // }
+    // TODO: improve this whole thing to use state.fermenter as an immutablejs object
     this.state = {
       ...f,
       requestingFermenter: false,
       saveSuccess: false,
       saveError: false,
-      editingExisting: !!(this.props.fermenter && this.props.fermenter.id)
+      editingExisting: !!(this.props.fermenter && this.props.fermenter.id),
+      fermenterId: f.id
     };
   }
 
@@ -62,34 +72,68 @@ class EditFermenter extends Component {
   }
 
   setFermenterVolume = (volume) => {
-    this.setState({volume: parseFloat(volume)});
+    if (!volume) {
+      volume = "";
+    } else {
+      volume = typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume;
+    }
+    this.setState({volume: volume});
   }
 
   setDescription = (description) => {
     this.setState({description: description});
-  }
+  };
 
   setIsActive = (isActive) => {
     this.setState({isActive: isActive});
-  }
+  };
 
-  saveDetails = () => {
+  isUpdating = () => {
+    return !!this.state.fermenterId
+  };
+
+  createFermenter = () => {
     const fermenter = {
       name: this.state.name,
-      volume: this.state.volume,
+      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
       type: this.state.type,
       units: this.state.units,
       isActive: this.state.isActive,
       description: this.state.description
     }
     addFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
-      console.log(responseJson);
+
       // { data: { createFermenter: { id: '1' } } }
-      if (data && data.createFermenter && data.createFermenter.id) {
+      if (responseJson.data && responseJson.data.createFermenter && responseJson.data.createFermenter.id) {
         this.setState({
           saveSuccess: true,
           saveError: false,
-          id: data.createFermenter.id,
+          fermenterId: responseJson.data.createFermenter.id,
+          editingExisting: true
+        });
+      }
+    }).catch((error) => {
+        console.log(error);
+        this.setState({saveSuccess: false, saveError: true})
+    });
+  };
+
+  editFermenter = () => {
+    const fermenter = {
+      name: this.state.name,
+      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
+      type: this.state.type,
+      units: this.state.units,
+      isActive: this.state.isActive,
+      description: this.state.description
+    }
+    updateFermenter(this.state.fermenterId, fermenter, this.props.auth.jwt).then((responseJson) => {
+      // { data: { createFermenter: { id: '1' } } }
+      if (responseJson.data && responseJson.data.updateFermenter && responseJson.data.updateFermenter.id) {
+        this.setState({
+          saveSuccess: true,
+          saveError: false,
+          fermenterId: responseJson.data.updateFermenter.id,
           editingExisting: true
         });
       }
@@ -101,6 +145,7 @@ class EditFermenter extends Component {
 
   render() {
     let statusMessage = null;
+    const volume = this.state.volume.toString();
     if (this.state.saveError) {
       statusMessage = <View style={styles.error}><Text>Error Saving Fermenter</Text></View>;
     } else if (this.state.saveSuccess) {
@@ -110,7 +155,7 @@ class EditFermenter extends Component {
     // TODO: better handling of fermenter type choices
     return (
       <View>
-        <Text>{this.state.editingExisting ? "Editing" : "Adding" }</Text>
+        <Text>{this.isUpdating() ? "Editing" : "Adding" }</Text>
         { statusMessage }
         <Text>Name</Text>
         <TextInput
@@ -155,7 +200,7 @@ class EditFermenter extends Component {
           style={{marginBottom: 10}}
           value={this.state.isActive} />
 
-        <Button title="Save" onPress={this.saveDetails} />
+        <Button title="Save" onPress={this.isUpdating() ? this.editFermenter : this.createFermenter} />
       </View>);
   }
 
@@ -184,7 +229,6 @@ const mapStateToProps = (state, props) => {
   // fermenter we need for props should be in props.navigation.state.params
   return {
     auth: state.auth,
-    navigation: state.navigation,
     navigation: props.navigation,
     ...props.navigation.state.params
   }

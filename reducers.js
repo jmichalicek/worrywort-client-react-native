@@ -45,8 +45,6 @@ const secondAction = AppNavigator.router.getActionForPathAndParams('login');
 const navInitialState = AppNavigator.router.getStateForAction(secondAction);
 
 function navReducer (state=navInitialState, action) {
-  console.log('action is ');
-  console.log(action);
   // const nextState = AppNavigator.router.getStateForAction(action, state);
   let nextState;
   switch (action.type) {

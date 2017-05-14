@@ -13,6 +13,7 @@ export class FermenterListRow extends Component {
 
   _onPress = () => {
     const fermenter = this.props.fermenter;
+
     this.props.dispatch(
       NavigationActions.navigate(
         { routeName: ViewRoutes.FERMENTER_EDIT, params: {fermenter: fermenter}  }
@@ -38,7 +39,6 @@ const mapStateToProps = (state, props) => {
   return {
     auth: state.auth,
     navigation: props.navigation,
-    ...props.navigation.state.params
   }
 };
 

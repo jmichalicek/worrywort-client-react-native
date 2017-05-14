@@ -31,7 +31,8 @@ const apiUrl = Config.API_URL || "http://localhost:4000/graphql/v1/";
 // }
 
 function makeRequest(query, token, url) {
-  console.log(JSON.stringify(query));
+  // TODO: remove this, but it's so nice for dev.  maybe use a real logger.
+  console.info(JSON.stringify(query));
   return fetch(url, {
     method: 'POST',
     headers: {
@@ -77,7 +78,7 @@ export function getAllBatches(token, url = apiUrl) {
 
 export function getAllFermenters(token, url = apiUrl) {
   const query = {
-    query: "query getFermenters {fermenters {name, id, description, type, units, volume } }"
+    query: "query getFermenters {fermenters {name, id, description, type, units, volume, isActive, isAvailable } }"
   }
   return makeRequest(query, token, url).then((response) => response.json());
 }
@@ -101,6 +102,17 @@ export function addFermenter(fermenter, token, url=apiUrl) {
       "units": fermenter.units,
       "volume": fermenter.volume,
       "isActive": fermenter.isActive
+    }
+  };
+  return makeRequest(mutation, token, url).then((response) => response.json());
+}
+
+export function updateFermenter(fermenterId, fermenter, token, url=apiUrl) {
+  const mutation = {
+    query: "mutation updateFermenter($id: Int!, $fermenter: FermenterInput!) {updateFermenter(id: $id, fermenter: $fermenter) { id }}",
+    variables: {
+      "id": fermenterId,
+      "fermenter": fermenter
     }
   };
   return makeRequest(mutation, token, url).then((response) => response.json());
