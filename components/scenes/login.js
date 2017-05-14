@@ -49,12 +49,19 @@ class Login extends Component {
     }
   }
 
+  passwordTextChangedHandler = (password) => {
+    this.setState({password})
+  };
+
+  usernameTextChangedHandler = (username) => {
+    this.setState({username})
+  };
+
   render() {
     var username = this.state.username;
     var password = this.state.password;
     let errorDisplay = null;
     if (this.props.auth.loginAttemptStatus === LoginAttemptStatus.FAIL) {
-      console.log('ERROR');
       errorDisplay = <View style={styles.error}><Text>Error logging in</Text></View>;
     }
 
@@ -64,14 +71,15 @@ class Login extends Component {
         <Text>Username:</Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-          onChangeText={(username) => this.setState({username})}
+          onChangeText={this.usernameTextChangedHandler}
           value={this.state.username}
         />
         <Text>Password:</Text>
         <TextInput
             style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-            onChangeText={(password) => this.setState({password})}
+            onChangeText={this.passwordTextChangedHandler}
             value={this.state.password}
+            secureTextEntry={true}
         />
         <Button title="Login" color="blue" accessibilityLabel="Login"
             onPress={() => this.handleLoginButton(username, password)}
