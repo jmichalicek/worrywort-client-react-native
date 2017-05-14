@@ -31,6 +31,7 @@ const apiUrl = Config.API_URL || "http://localhost:4000/graphql/v1/";
 // }
 
 function makeRequest(query, token, url) {
+  console.log(JSON.stringify(query));
   return fetch(url, {
     method: 'POST',
     headers: {
@@ -92,8 +93,8 @@ export function getFermenter(fermenterId, token, url = apiUrl) {
 
 export function addFermenter(fermenter, token, url=apiUrl) {
   const mutation = {
-    "query": "mutation putFermenter(description: String, $name: String!, $type: Int!, $units: Int!, $volume: Float!, $isActive: Boolean) {createFermenter(description: $description, name: $name, type: $type, units: $units, volume: $volume, isActive: $isActive) { id }",
-    "variables": {
+    query: "mutation putFermenter($description: String, $name: String!, $type: Int!, $units: Int!, $volume: Float!, $isActive: Boolean) {createFermenter(description: $description, name: $name, type: $type, units: $units, volume: $volume, is_active: $isActive) { id }}",
+    variables: {
       "name": fermenter.name,
       "description": fermenter.description,
       "type": fermenter.type,
@@ -101,5 +102,6 @@ export function addFermenter(fermenter, token, url=apiUrl) {
       "volume": fermenter.volume,
       "isActive": fermenter.isActive
     }
-}
+  };
+  return makeRequest(mutation, token, url).then((response) => response.json());
 }

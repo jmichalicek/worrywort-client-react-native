@@ -16,9 +16,24 @@ export const LoginAttemptStatus = {
   FAIL: 'failure'
 }
 
+// must be a better way to do this than keeping these in sync with the server...
+export const FermenterTypes = {
+  BUCKET: 'BUCKET',
+  CARBOY: 'CARBOY',
+  CONICAL: 'CONICAL'
+}
+
+export const VolumeUnits = {
+  GALLONS: 'GALLONS',
+  LITERS: 'LITERS'
+}
+
 export const styles = StyleSheet.create({
   error: {
     backgroundColor: 'red'
+  },
+  success: {
+    backgroundColor: 'green'
   },
   toolbar: {
     backgroundColor: '#e9eaed',

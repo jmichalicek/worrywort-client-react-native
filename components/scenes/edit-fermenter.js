@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TextInput, Button, Picker, Switch } from 'react-native';
+import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../batch-list-row';
 import { getFermenter, addFermenter } from '../../utils/api-client';
+import { FermenterTypes, VolumeUnits, styles } from '../../constants';
 
 class EditFermenter extends Component {
   // TODO: Make this a function, get at whether we have a fermenter or not and set to
@@ -26,6 +27,9 @@ class EditFermenter extends Component {
     this.state = {
       ...f,
       requestingFermenter: false,
+      saveSuccess: false,
+      saveError: false,
+      editingExisting: !!(this.props.fermenter && this.props.fermenter.id)
     };
   }
 
@@ -59,7 +63,7 @@ class EditFermenter extends Component {
   }
 
   setFermenterVolume = (volume) => {
-    this.setState({volume: volume});
+    this.setState({volume: parseFloat(volume)});
   }
 
   setDescription = (description) => {
@@ -71,7 +75,6 @@ class EditFermenter extends Component {
   }
 
   saveDetails = () => {
-    console.log('SAVING');
     const fermenter = {
       name: this.state.name,
       volume: this.state.volume,
@@ -82,16 +85,34 @@ class EditFermenter extends Component {
     }
     addFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
       console.log(responseJson);
+      // { data: { createFermenter: { id: '1' } } }
+      if (data && data.createFermenter && data.createFermenter.id) {
+        this.setState({
+          saveSuccess: true,
+          saveError: false,
+          id: data.createFermenter.id,
+          editingExisting: true
+        });
+      }
+    }).catch((error) => {
+        console.log(error);
+        this.setState({saveSuccess: false, saveError: true})
     });
   };
 
   render() {
-    var dataSource = this.state.dataSource;
+    let statusMessage = null;
+    if (this.state.saveError) {
+      statusMessage = <View style={styles.error}><Text>Error Saving Fermenter</Text></View>;
+    } else if (this.state.saveSuccess) {
+      statusMessage = <View style={styles.success}><Text>Fermenter Saved</Text></View>;
+    }
+
     // TODO: better handling of fermenter type choices
     return (
       <View>
-        <Text>{this.props.fermenter ? "Editing" : "Adding" }</Text>
-
+        <Text>{this.state.editingExisting ? "Editing" : "Adding" }</Text>
+        { statusMessage }
         <Text>Name</Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
@@ -100,17 +121,18 @@ class EditFermenter extends Component {
         />
         <Text>Fermenter Type</Text>
         <Picker selectedValue={this.state.type}
+          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onValueChange={this.setFermenterType}>
-          <Picker.Item label="Bucket" value="BUCKET" />
-          <Picker.Item label="Carboy" value="CARBOY" />
-          <Picker.Item label="Conical" value="CONICAL" />
+          <Picker.Item label="Bucket" value={FermenterTypes.BUCKET} />
+          <Picker.Item label="Carboy" value={FermenterTypes.CARBOY} />
+          <Picker.Item label="Conical" value={FermenterTypes.CONICAL} />
         </Picker>
 
         <Text>Volume Units</Text>
         <Picker selectedValue={this.state.units}
           onValueChange={this.setFermenterUnits}>
-          <Picker.Item label="Gallons" value="GALLONS" />
-          <Picker.Item label="Liters" value="LITERS" />
+          <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
+          <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
         </Picker>
 
         <Text>Volume</Text>
@@ -118,13 +140,15 @@ class EditFermenter extends Component {
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setFermenterVolume}
           value={this.state.volume}
+          keyboardType='numeric'
         />
 
         <Text>Short Description</Text>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          style={{height: 80, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setDescription}
           value={this.state.description}
+          multiline={true}
         />
 
         <Text>Make Fermenter Active</Text>
@@ -146,17 +170,7 @@ class EditFermenter extends Component {
       });
     });
   }
-}
-
-// EditFermenter.navigationOptions = props => {
-//   const {navigation} = props;
-//   const {state, setParams} = navigation;
-//   const {params} = state;
-//   return {
-//     title: 'Fermenter',
-//     headerRight: <Button title={"Save"} onPress={(navigation) => {console.log(params)}} />
-//   }
-// };
+};
 
 EditFermenter.propTypes = {
   fermenterId: PropTypes.number,
