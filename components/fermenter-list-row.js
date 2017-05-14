@@ -2,16 +2,18 @@ import React, { Component,  } from 'react';
 import { View, Text, TouchableHighlight } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 
-import { ViewRoutes } from '../../constants';
+import { connect } from 'react-redux';
 
-export default class BatchListRow extends Component {
+import { ViewRoutes } from '../constants';
+
+export class FermenterListRow extends Component {
   constructor(props) {
     super(props);
   }
 
   _onPress = () => {
-    console.log('stuff');
-    navigation.dispatch(
+    const fermenter = this.props.fermenter;
+    this.props.dispatch(
       NavigationActions.navigate(
         { routeName: ViewRoutes.FERMENTER_EDIT, params: {fermenter: fermenter}  }
       )
@@ -29,3 +31,15 @@ export default class BatchListRow extends Component {
     );
   }
 }
+
+// do we really need the redux stuff here or could I just
+// really pass nav as props?
+const mapStateToProps = (state, props) => {
+  return {
+    auth: state.auth,
+    navigation: props.navigation,
+    ...props.navigation.state.params
+  }
+};
+
+export default connect(mapStateToProps)(FermenterListRow);

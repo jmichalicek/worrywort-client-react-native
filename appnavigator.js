@@ -66,8 +66,10 @@ export const AppNavigator =
   DrawerNavigator(
     DrawerRoutes
   )
+
+  // can I pass actual state here? or at least `navigation?  can I grab that from what is being pulled in?`
 const AppWithNavigationState = ({ dispatch, nav }) => (
-  <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />
+  <AppNavigator navigation={addNavigationHelpers({ dispatch: dispatch, state: nav })} />
 );
 
 AppWithNavigationState.propTypes = {

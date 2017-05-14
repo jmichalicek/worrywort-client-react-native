@@ -18,7 +18,6 @@ class EditFermenter extends Component {
 
   constructor(props) {
     super(props);
-
     const defaultFermenter = {
       name: '', volume: '', type: 'BUCKET', units: 'GALLONS',
       isActive: true
@@ -181,13 +180,13 @@ EditFermenter.propTypes = {
 
 // import BatchList from '../components/scenes/batch-list';
 
-const mapStateToProps = (state) => {
-  // are nav and navigation duplicates?  Or is one old, from the old built in but now removed
-  // react native navigation?
+const mapStateToProps = (state, props) => {
+  // fermenter we need for props should be in props.navigation.state.params
   return {
     auth: state.auth,
     navigation: state.navigation,
-    // nav: state.nav,
+    navigation: props.navigation,
+    ...props.navigation.state.params
   }
 };
 

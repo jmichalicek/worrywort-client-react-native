@@ -38,6 +38,7 @@ class FermenterList extends Component {
 
   constructor(props) {
     super(props);
+
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       fermenters: [],
@@ -89,18 +90,14 @@ class FermenterList extends Component {
   }
 }
 
-// import BatchList from '../components/scenes/batch-list';
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  // TODO: Am I doing this wrong?  navigation seems to always be null
+  // TODO: Do I even need react-navigation integrated with redux?
   return {
     auth: state.auth,
-    navigation: state.navigation
-    //batchList: state.batchList
+    navigation: state.navigation,
+    ...props
   }
 };
-
-// const BatchListLink = connect(
-//   mapStateToProps
-// )(BatchList);
 
 export default connect(mapStateToProps)(FermenterList);

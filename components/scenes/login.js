@@ -33,7 +33,8 @@ class Login extends Component {
       // Seems like the navAction with reset should work
       // to put this next view on a stack with nothign below it
       nextProps.dispatch(
-          NavigationActions.navigate({ routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} })
+          // NavigationActions.navigate({ routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} })
+          NavigationActions.navigate({ routeName: ViewRoutes.FERMENTER_LIST, params: {shouldRequestBatches: true} })
       );
 
       // const navAction = NavigationOptions.reset({
@@ -58,6 +59,9 @@ class Login extends Component {
   };
 
   render() {
+    // console.log('LOGIN')
+    // console.log(this.props);
+    // console.log('END LOGIN\n\n')
     var username = this.state.username;
     var password = this.state.password;
     let errorDisplay = null;
@@ -89,10 +93,11 @@ class Login extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
   return {
     auth: state.auth,
-    navigation: state.navigation
+    nav: state.nav,
+    ...props
   }
 };
 
