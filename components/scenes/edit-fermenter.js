@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../batch-list-row';
-import { getFermenter, addFermenter, updateFermenter } from '../../utils/api-client';
+import { getFermenter, createFermenter, updateFermenter } from '../../utils/api-client';
 import { FermenterTypes, VolumeUnits, styles } from '../../constants';
 
 class EditFermenter extends Component {
@@ -23,14 +23,6 @@ class EditFermenter extends Component {
       isActive: true
     }
     let f = this.props.fermenter || defaultFermenter;
-    // TODO:
-    // hacky kludge.  Finally a reason to use a real graphql client
-    // to autoconvert these as they are requested elsewhere
-    // doing this then requires using toString() when setting the value on the form field
-    // and from there it all blows up.
-    // if (typeof f.volume === "string") {
-    //   f.volume = parseFloat(f.volume);
-    // }
     // TODO: improve this whole thing to use state.fermenter as an immutablejs object
     this.state = {
       ...f,
@@ -72,11 +64,6 @@ class EditFermenter extends Component {
   }
 
   setFermenterVolume = (volume) => {
-    if (!volume) {
-      volume = "";
-    } else {
-      volume = typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume;
-    }
     this.setState({volume: volume});
   }
 
@@ -92,7 +79,18 @@ class EditFermenter extends Component {
     return !!this.state.fermenterId
   };
 
-  createFermenter = () => {
+  _volumeFieldDisplayValue = () => {
+    if (typeof this.state.volume !== "string") {
+      return this.state.volume.toString();
+    }
+    return this.state.volume;
+  }
+
+  /* Make request to add a fermenter */
+  addFermenter = () => {
+    // TODO:
+    // hacky kludge for volume.  Finally a reason to use a real graphql client
+    // to autoconvert these as they are requested elsewhere
     const fermenter = {
       name: this.state.name,
       volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
@@ -101,7 +99,7 @@ class EditFermenter extends Component {
       isActive: this.state.isActive,
       description: this.state.description
     }
-    addFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
+    createFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
 
       // { data: { createFermenter: { id: '1' } } }
       if (responseJson.data && responseJson.data.createFermenter && responseJson.data.createFermenter.id) {
@@ -118,7 +116,11 @@ class EditFermenter extends Component {
     });
   };
 
+  /* Make request to update a fermenter */
   editFermenter = () => {
+    // TODO:
+    // hacky kludge for volume.  Finally a reason to use a real graphql client
+    // to autoconvert these as they are requested elsewhere
     const fermenter = {
       name: this.state.name,
       volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
@@ -145,7 +147,6 @@ class EditFermenter extends Component {
 
   render() {
     let statusMessage = null;
-    const volume = this.state.volume.toString();
     if (this.state.saveError) {
       statusMessage = <View style={styles.error}><Text>Error Saving Fermenter</Text></View>;
     } else if (this.state.saveSuccess) {
@@ -200,7 +201,7 @@ class EditFermenter extends Component {
           style={{marginBottom: 10}}
           value={this.state.isActive} />
 
-        <Button title="Save" onPress={this.isUpdating() ? this.editFermenter : this.createFermenter} />
+        <Button title="Save" onPress={this.isUpdating() ? this.editFermenter : this.addFermenter} />
       </View>);
   }
 
@@ -223,7 +224,6 @@ EditFermenter.propTypes = {
   // nav: PropTypes.object.isRequired,
 };
 
-// import BatchList from '../components/scenes/batch-list';
 
 const mapStateToProps = (state, props) => {
   // fermenter we need for props should be in props.navigation.state.params

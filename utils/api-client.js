@@ -92,16 +92,17 @@ export function getFermenter(fermenterId, token, url = apiUrl) {
   return makeRequest(query, token, url).then((response) => response.json());
 };
 
-export function addFermenter(fermenter, token, url=apiUrl) {
+export function createFermenter(fermenter, token, url=apiUrl) {
   const mutation = {
-    query: "mutation putFermenter($description: String, $name: String!, $type: Int!, $units: Int!, $volume: Float!, $isActive: Boolean) {createFermenter(description: $description, name: $name, type: $type, units: $units, volume: $volume, is_active: $isActive) { id }}",
+    query: "mutation putFermenter($fermenter: FermenterInput) {createFermenter(fermenter: $fermenter) { id }}",
     variables: {
-      "name": fermenter.name,
-      "description": fermenter.description,
-      "type": fermenter.type,
-      "units": fermenter.units,
-      "volume": fermenter.volume,
-      "isActive": fermenter.isActive
+      "fermenter": fermenter
+      // "name": fermenter.name,
+      // "description": fermenter.description,
+      // "type": fermenter.type,
+      // "units": fermenter.units,
+      // "volume": fermenter.volume,
+      // "isActive": fermenter.isActive
     }
   };
   return makeRequest(mutation, token, url).then((response) => response.json());
