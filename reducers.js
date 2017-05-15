@@ -2,12 +2,14 @@ import { combineReducers } from 'redux'
 import { AUTH_LOGGING_IN, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILURE} from './actions';
 import { AppNavigator } from './appnavigator'
 import { login } from './utils/api-client';
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions } from 'react-navigation';
+import { LoginAttemptStatus } from './constants';
 
 const authInitialState = {
   isLoggedIn: false,
   jwt: '',
-  isRequesting: false
+  isRequesting: false,
+  loginAttemptStatus: null
 }
 
 function authReducer(state = authInitialState, action) {
@@ -16,19 +18,22 @@ function authReducer(state = authInitialState, action) {
       return Object.assign({}, state, {
         isLoggedIn: false,
         jwt: '',
-        isRequesting: true
+        isRequesting: true,
+        loginAttemptStatus: LoginAttemptStatus.UNKNOWN
       });
       case AUTH_LOGIN_SUCCESS:
         return Object.assign({}, state, {
           isLoggedIn: true,
           jwt: action.jwt,
-          isRequesting: false
+          isRequesting: false,
+          loginAttemptStatus: LoginAttemptStatus.SUCCESS
         });
       case AUTH_LOGIN_FAILURE:
         return Object.assign({}, state, {
           isLoggedIn: false,
           jwt: '',
-          isRequesting: false
+          isRequesting: false,
+          loginAttemptStatus: LoginAttemptStatus.FAIL
         });
     default:
       return state
@@ -40,8 +45,6 @@ const secondAction = AppNavigator.router.getActionForPathAndParams('login');
 const navInitialState = AppNavigator.router.getStateForAction(secondAction);
 
 function navReducer (state=navInitialState, action) {
-  console.log('action is ');
-  console.log(action);
   // const nextState = AppNavigator.router.getStateForAction(action, state);
   let nextState;
   switch (action.type) {

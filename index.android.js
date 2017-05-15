@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Navigator, AppRegistry, TextInput } from 'react-native';
+import { Text, AppRegistry, TextInput } from 'react-native';
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk'
@@ -10,7 +10,6 @@ import AppWithNavigationState from './appnavigator'
 import BatchList from './components/scenes/batch-list';
 import FermenterList from './components/scenes/fermenter-list';
 import Login from './components/scenes/login';
-import DrawerLayout from './components/android/drawer-layout';
 import { ViewRoutes } from './constants';
 
 // bad idea?
@@ -37,38 +36,3 @@ class WorryWortClient extends React.Component {
 AppRegistry.registerComponent('WorryWortClient', () => WorryWortClient);
 
 export default WorryWortClient;
-
-const styles = StyleSheet.create({
-  toolbar: {
-    backgroundColor: '#e9eaed',
-    height: 56,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    // alignItems: 'center',
-    justifyContent: 'center',
-    alignItems: 'stretch',
-  },
-  batchList: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fermenterList: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  login: {
-    flex: 1
-  },
-  login__input: {
-    flex: 1
-  },
-  login__label: {
-    flex: 1
-  }
-});

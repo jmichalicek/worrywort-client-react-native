@@ -1,17 +1,46 @@
-import React, { Component,  } from 'react';
-import { View, Text, ListView } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, ListView, Button } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../fermenter-list-row';
+import { NavigationActions } from 'react-navigation';
+
+import { ViewRoutes } from '../../constants';
 import { getAllFermenters } from '../../utils/api-client';
 
+
 class FermenterList extends Component {
-  static navigationOptions = {
+  // static navigationOptions = ({ navigation, screenProps }) => ({
+  //   title: 'Your Fermenters',
+  //   headerRight: <Button title="Add" onPress={() =>{
+  //     navigation.navigate('fermenterEdit')}}/>
+  // });
+
+  static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Your Fermenters',
-  };
+    headerRight: <Button title="Add" onPress={() =>{
+      navigation.dispatch(
+        NavigationActions.navigate(
+          { routeName: ViewRoutes.FERMENTER_EDIT }
+        )
+      )}}/>
+  });
+
+  // static navigationOptions = ({ navigation, screenProps }) => ({
+  //   title: 'Your Fermenters',
+  //   headerRight: <Button  />,
+  // });
+
+  // static navigationOptions = {
+  //     title: 'Your Fermenters',
+  //     // headerRight: (<Button  />),
+  //
+  // }
 
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}
+    );
     this.state = {
       fermenters: [],
       dataSource: ds.cloneWithRows([]) , // use initialState for this?
@@ -22,7 +51,7 @@ class FermenterList extends Component {
   // batches in Redux store version
   componentWillReceiveProps(nextProps) {
     //TODO: May need to be smarter about requesting fermenters.   Maybe a "shouldRequest"
-    if (nextProps.auth.jwt && !this.state.isRequesting && this.props.fermenters.lengh < 1) {
+    if (nextProps.auth.jwt && !this.state.isRequesting && this.props.fermenters.length < 1) {
       this.loadFermenters(nextProps.auth.jwt);
     }
   }
@@ -36,16 +65,24 @@ class FermenterList extends Component {
     }
   }
 
+  _onClickAddButton() {
+
+  }
+
+  _renderListRow(rowData) {
+    return <Row fermenter={rowData} />
+  }
+
   render() {
     var dataSource = this.state.dataSource;
     return (
       <View>
-        <Text>Your Fermenters:</Text>
-        <ListView dataSource={dataSource} renderRow={(rowData) => <Row fermenter={rowData} />} />
+        <ListView dataSource={dataSource} enableEmptySections={true} renderRow={this._renderListRow} />
       </View>);
   }
 
   loadFermenters(jwt = null) {
+    console.log('LOADING FERMENTERS');
     this.setState({isRequesting: true});
     jwt = jwt || this.props.auth.jwt;
     getAllFermenters(jwt).then((responseJson) => {
@@ -59,18 +96,14 @@ class FermenterList extends Component {
   }
 }
 
-// import BatchList from '../components/scenes/batch-list';
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  // TODO: Am I doing this wrong?  navigation seems to always be null
+  // TODO: Do I even need react-navigation integrated with redux?
   return {
     auth: state.auth,
-    navigation: state.navigation
-    //batchList: state.batchList
+    navigation: state.navigation,
+    ...props.navigation.state.params
   }
 };
-
-// const BatchListLink = connect(
-//   mapStateToProps
-// )(BatchList);
 
 export default connect(mapStateToProps)(FermenterList);

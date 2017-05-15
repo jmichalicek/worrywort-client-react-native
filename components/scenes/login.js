@@ -2,7 +2,7 @@ import React, { Component,  } from 'react';
 import { connect } from 'react-redux';
 import { Image, View, TextInput, Text, Button } from 'react-native';
 import { doLogin } from '../../actions';
-import { ViewRoutes } from '../../constants';
+import { LoginAttemptStatus, ViewRoutes, styles } from '../../constants';
 import { NavigationActions } from 'react-navigation';
 
 class Login extends Component {
@@ -26,33 +26,61 @@ class Login extends Component {
   componentWillReceiveProps(nextProps) {
     // TODO: I bet this needs some cleanup and some testing around these checks before navigating!!
     // TODO: and eventually less error prone routing
-    // const routeStack = nextProps.navigator.getCurrentRoutes();
+
     if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
         && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
-      // TODO: Can I abstract the dispatching of navigate to just be a navTo(routeName)
-      //  stored somewhere central?
-      nextProps.dispatch(NavigationActions.navigate(
-        { routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} }));
+
+      // Seems like the navAction with reset should work
+      // to put this next view on a stack with nothign below it
+      nextProps.dispatch(
+          // NavigationActions.navigate({ routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} })
+          NavigationActions.navigate({ routeName: ViewRoutes.FERMENTER_LIST, params: {shouldRequestBatches: true} })
+      );
+
+      // const navAction = NavigationOptions.reset({
+      //   index: 0,
+      //   actions: [
+      //     NavigationActions.navigate(
+      //       {routeName: ViewRoutes.BATCH_LIST, params: {shouldRequestBatches: true} }
+      //     )
+      //   ]
+      // });
+      // nextProps.dispatch(navAction);
+
     }
   }
+
+  passwordTextChangedHandler = (password) => {
+    this.setState({password})
+  };
+
+  usernameTextChangedHandler = (username) => {
+    this.setState({username})
+  };
 
   render() {
     var username = this.state.username;
     var password = this.state.password;
+    let errorDisplay = null;
+    if (this.props.auth.loginAttemptStatus === LoginAttemptStatus.FAIL) {
+      errorDisplay = <View style={styles.error}><Text>Error logging in</Text></View>;
+    }
 
     return (
       <View>
+        { errorDisplay }
         <Text>Username:</Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-          onChangeText={(username) => this.setState({username})}
+          onChangeText={this.usernameTextChangedHandler}
           value={this.state.username}
         />
         <Text>Password:</Text>
         <TextInput
             style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-            onChangeText={(password) => this.setState({password})}
+            onChangeText={this.passwordTextChangedHandler}
             value={this.state.password}
+            secureTextEntry={true}
         />
         <Button title="Login" color="blue" accessibilityLabel="Login"
             onPress={() => this.handleLoginButton(username, password)}
@@ -62,10 +90,11 @@ class Login extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
   return {
     auth: state.auth,
-    navigation: state.navigation
+    nav: state.nav,
+    ...props
   }
 };
 
