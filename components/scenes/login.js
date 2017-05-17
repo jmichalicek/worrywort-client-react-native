@@ -1,6 +1,6 @@
 import React, { Component,  } from 'react';
 import { connect } from 'react-redux';
-import { Image, View, TextInput, Text, Button } from 'react-native';
+import { Image, View, TextInput, Text, Button, Switch } from 'react-native';
 import { doLogin } from '../../actions';
 import { LoginAttemptStatus, ViewRoutes, styles } from '../../constants';
 import { NavigationActions } from 'react-navigation';
@@ -15,7 +15,10 @@ class Login extends Component {
     this.state = {
       username: '',
       password: '',
+      stayLoggedIn: true
     };
+
+    // try to load jwt here from async storage
   }
 
   handleLoginButton (username, password) {
@@ -30,6 +33,7 @@ class Login extends Component {
     if (!this.props.auth.isLoggedIn && nextProps.auth.isLoggedIn
         && nextProps.auth.jwt && !nextProps.auth.isRequesting) {
 
+      this.saveJwt(nextProps.auth.jwt);
       // Seems like the navAction with reset should work
       // to put this next view on a stack with nothign below it
       nextProps.dispatch(
@@ -50,6 +54,11 @@ class Login extends Component {
     }
   }
 
+  saveJwt (jwt) => {
+    // save it
+
+  }
+
   passwordTextChangedHandler = (password) => {
     this.setState({password})
   };
@@ -57,6 +66,10 @@ class Login extends Component {
   usernameTextChangedHandler = (username) => {
     this.setState({username})
   };
+
+  stayLoggedInChangedHandler = (stayLoggedIn) => {
+    this.setState({stayLoggedIn: stayLoggedIn})
+  }
 
   render() {
     var username = this.state.username;
