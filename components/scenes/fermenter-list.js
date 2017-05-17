@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { View, Text, ListView, Button, RefreshControl, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
-import Row from '../fermenter-list-row';
 import { NavigationActions } from 'react-navigation';
+import { styles as s } from "react-native-style-tachyons";
 
+import Row from '../fermenter-list-row';
 import { ViewRoutes } from '../../constants';
 import { getAllFermenters } from '../../utils/api-client';
 
