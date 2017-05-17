@@ -13,6 +13,7 @@
     "react-apollo": "^1.0.1",
     "react-native": "^0.44.0",
     "react-native-config": "^0.4.2",
+    "react-native-style-tachyons": "^3.4.0",
     "react-navigation": "^1.0.0-beta.9",
     "react-redux": "^5.0.4",
     "redux": "^3.6.0",
