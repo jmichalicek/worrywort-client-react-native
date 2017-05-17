@@ -54,7 +54,7 @@ class Login extends Component {
     }
   }
 
-  saveJwt (jwt) => {
+  saveJwt = (jwt) => {
     // save it
 
   }

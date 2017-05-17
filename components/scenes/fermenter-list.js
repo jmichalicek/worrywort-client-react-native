@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ListView, Button } from 'react-native';
+import { View, Text, ListView, Button, RefreshControl, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import Row from '../fermenter-list-row';
 import { NavigationActions } from 'react-navigation';
@@ -24,17 +24,6 @@ class FermenterList extends Component {
         )
       )}}/>
   });
-
-  // static navigationOptions = ({ navigation, screenProps }) => ({
-  //   title: 'Your Fermenters',
-  //   headerRight: <Button  />,
-  // });
-
-  // static navigationOptions = {
-  //     title: 'Your Fermenters',
-  //     // headerRight: (<Button  />),
-  //
-  // }
 
   constructor(props) {
     super(props);
@@ -75,10 +64,18 @@ class FermenterList extends Component {
 
   render() {
     var dataSource = this.state.dataSource;
+    const refreshControl = <RefreshControl refreshing={this.state.isRequesting}
+       onRefresh={this._onRefresh} enabled={true} progressViewOffset={-15}  />;
     return (
-      <View>
-        <ListView dataSource={dataSource} enableEmptySections={true} renderRow={this._renderListRow} />
-      </View>);
+      <ScrollView refreshControl={refreshControl}>
+        <ListView dataSource={dataSource} enableEmptySections={true}
+                  renderRow={this._renderListRow} />
+      </ScrollView>);
+  }
+
+  _onRefresh = () => {
+    this.setState({isRequesting: true});
+    this.loadFermenters(this.props.auth.jwt);
   }
 
   loadFermenters(jwt = null) {
