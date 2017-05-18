@@ -1,9 +1,12 @@
 import React, { Component,  } from 'react';
 import { connect } from 'react-redux';
 import { Image, View, TextInput, Text, Button, Switch } from 'react-native';
+import { NavigationActions } from 'react-navigation';
+import { styles as s } from "react-native-style-tachyons";
+
 import { doLogin } from '../../actions';
 import { LoginAttemptStatus, ViewRoutes, styles } from '../../constants';
-import { NavigationActions } from 'react-navigation';
+
 
 class Login extends Component {
   static navigationOptions = {
@@ -76,21 +79,23 @@ class Login extends Component {
     var password = this.state.password;
     let errorDisplay = null;
     if (this.props.auth.loginAttemptStatus === LoginAttemptStatus.FAIL) {
-      errorDisplay = <View style={styles.error}><Text>Error logging in</Text></View>;
+      errorDisplay = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_red, s.h3, s.mb1]}>
+                      <Text style={[s.white]}>Error logging in</Text>
+                     </View>;
     }
 
     return (
-      <View>
+      <View style={[s.flx_1, s.bg_white, s.h150]}>
         { errorDisplay }
         <Text>Username:</Text>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
           onChangeText={this.usernameTextChangedHandler}
           value={this.state.username}
         />
         <Text>Password:</Text>
         <TextInput
-            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
             onChangeText={this.passwordTextChangedHandler}
             value={this.state.password}
             secureTextEntry={true}

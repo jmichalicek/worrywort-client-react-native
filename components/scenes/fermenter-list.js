@@ -70,7 +70,8 @@ class FermenterList extends Component {
     return (
       <ScrollView refreshControl={refreshControl}>
         <ListView dataSource={dataSource} enableEmptySections={true}
-                  renderRow={this._renderListRow} />
+                  renderRow={this._renderListRow}
+                  />
       </ScrollView>);
   }
 

@@ -23,9 +23,9 @@ export class FermenterListRow extends Component {
 
   render() {
     return (
-      <TouchableHighlight onPress={this._onPress}>
-        <View style={[s.ba, s.jcfs, s.pa2]}>
-          <Text>{this.props.fermenter.name}</Text>
+      <TouchableHighlight onPress={this._onPress} style={[s.bb, s.jcfs, s.pa2]}>
+        <View>
+          <Text style={[s.white]}>{this.props.fermenter.name}</Text>
           <Text>{this.props.fermenter.volume}{this.props.fermenter.units} {this.props.fermenter.type}</Text>
         </View>
       </TouchableHighlight>
