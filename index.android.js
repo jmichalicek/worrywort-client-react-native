@@ -4,9 +4,6 @@ import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk'
 
-import NativeTachyons from 'react-native-style-tachyons';
-import { StyleSheet } from 'react-native';
-
 import worrywortClientReducer from './reducers'
 
 import AppWithNavigationState from './appnavigator'
@@ -14,26 +11,17 @@ import BatchList from './components/scenes/batch-list';
 import FermenterList from './components/scenes/fermenter-list';
 import Login from './components/scenes/login';
 import { ViewRoutes } from './constants';
+import './styles'
 
 // bad idea?
 // apollog seems to be adding a lot of overhead I don't currently need
 // let client = createClient();
 
-// Can I put this elsewhere
-const colorPalette = {
-  colors: {
-    palette: {
-      red: "#FF0000",
-      green: "#008000",
-      white: "#FFFFFF",
-      gray: "#808080"
-    }
-  }
-}
-NativeTachyons.build({...colorPalette
-    /* REM parameter is optional, default is 16 */
-    // rem: screenWidth > 340 ? 18 : 16
-}, StyleSheet);
+// // Can this go into colors?
+// NativeTachyons.build({...colorPalette
+//     /* REM parameter is optional, default is 16 */
+//     // rem: screenWidth > 340 ? 18 : 16
+// }, StyleSheet);
 
 class WorryWortClient extends React.Component {
   store = createStore(
