@@ -1,53 +1,45 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+import React from 'react';
+import { Text, AppRegistry, TextInput } from 'react-native';
+import { createStore, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk'
 
-import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import worrywortClientReducer from './reducers'
 
-export default class WorryWortClient extends Component {
+import AppWithNavigationState from './appnavigator'
+import BatchList from './components/scenes/batch-list';
+import FermenterList from './components/scenes/fermenter-list';
+import Login from './components/scenes/login';
+import { ViewRoutes } from './constants';
+import './styles'
+
+// bad idea?
+// apollog seems to be adding a lot of overhead I don't currently need
+// let client = createClient();
+
+// // Can this go into colors?
+// NativeTachyons.build({...colorPalette
+//     /* REM parameter is optional, default is 16 */
+//     // rem: screenWidth > 340 ? 18 : 16
+// }, StyleSheet);
+
+class WorryWortClient extends React.Component {
+  store = createStore(
+    worrywortClientReducer,
+    applyMiddleware(
+      thunk
+    )
+  );
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
+      <Provider store={this.store}>
+        <AppWithNavigationState />
+      </Provider>
     );
   }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+};
 
 AppRegistry.registerComponent('WorryWortClient', () => WorryWortClient);
+
+export default WorryWortClient;
