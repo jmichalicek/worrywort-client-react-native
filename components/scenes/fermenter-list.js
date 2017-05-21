@@ -59,6 +59,9 @@ class FermenterList extends Component {
 
   }
 
+
+
+
   _renderListRow(rowData) {
     return <Row fermenter={rowData} />
   }
@@ -81,7 +84,6 @@ class FermenterList extends Component {
   }
 
   loadFermenters(jwt = null) {
-    console.log('LOADING FERMENTERS');
     this.setState({isRequesting: true});
     jwt = jwt || this.props.auth.jwt;
     getAllFermenters(jwt).then((responseJson) => {
