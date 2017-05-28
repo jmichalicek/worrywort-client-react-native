@@ -7,6 +7,7 @@ import { styles as s } from "react-native-style-tachyons";
 import Row from '../batch-list-row';
 import { batchListRequest, batchListReceived, requestBatchList } from '../../actions';
 import { getAllBatches } from '../../utils/api-client';
+import { ViewRoutes } from '../../constants';
 
 class BatchList extends Component {
 
@@ -15,7 +16,7 @@ class BatchList extends Component {
     headerRight: <Button title="Add" onPress={() =>{
       navigation.dispatch(
         NavigationActions.navigate(
-          { routeName: ViewRoutes.FERMENTER_EDIT }
+          { routeName: ViewRoutes.BATCH_EDIT }
         )
       )}}/>
   });
