@@ -1,9 +1,16 @@
-batchimport React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
+
+// TODO: refactor these out into a DatePicker component
+import { DatePickerAndroid, DatePickerIOS, TouchableWithoutFeedback} from 'react-native';
+
 import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
+import { styles as s } from "react-native-style-tachyons";
+
 import Row from '../batch-list-row';
 import { getBatch, createBatch, updateBatch } from '../../utils/api-client';
-import { BatchTypes, VolumeUnits, styles } from '../../constants';
+import { KeyboardTypes, VolumeUnits, styles } from '../../constants';
 
 class EditBatch extends Component {
   // TODO: Make this a function, get at whether we have a batch or not and set to
@@ -18,10 +25,28 @@ class EditBatch extends Component {
 
   constructor(props) {
     super(props);
+
+    const currentTime = new Date();
+
     const defaultBatch = {
-      name: '', volume: '', type: 'BUCKET', units: 'GALLONS',
+      name: '',
+      brewNotes: '',
+      tastingNotes: '',
+      brewDate: currentTime,
+      bottleDate: null,
+      estimatedBottlingDate: null,
+      estimatedDrinkableDate: null,
+      secondaryFermenterDate: null,
+      originalGravity: null,
+      finalGravity: null,
+      recipeUrl: '',
+      boilVolume: null,
+      fermenterVolume: null,
+      bottledVolume: null,
+      volumeUnits: VolumeUnits.GALLONS,
       isActive: true
     }
+
     let f = this.props.batch || defaultBatch;
     // TODO: improve this whole thing to use state.batch as an immutablejs object
     this.state = {
@@ -78,6 +103,24 @@ class EditBatch extends Component {
     }
     return this.state.volume;
   }
+
+  showAndroidPicker = async (options) => {
+    try {
+      var newState = {};
+      // get date from state
+      const currentDate = this.state.brewDate;
+      const {action, year, month, day} = await DatePickerAndroid.open(options);
+      if (action === DatePickerAndroid.dismissedAction) {
+        console.log('dismissed');
+      } else {
+        var date = new Date(year, month, day);
+        this.setState({brewDate: date});
+      }
+
+    } catch ({code, message}) {
+      console.warn(`Error in example `, message);
+    }
+  };
 
   /* Make request to add a batch */
   addBatch = () => {
@@ -153,10 +196,22 @@ class EditBatch extends Component {
         { statusMessage }
         <Text>Name</Text>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
           onChangeText={this.setNameFromInput}
           value={this.state.name}
         />
+
+        <TouchableWithoutFeedback
+          onPress={this.showAndroidPicker.bind(this, {date: this.state.brewDate})}
+        >
+        <View>
+          <Text>Brew Date</Text>
+          <TextInput
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            value={this.state.brewDate.toString()}
+            onFocus={this.showAndroidPicker.bind(this, {date: this.state.brewDate})}
+            editable={false} /></View>
+        </TouchableWithoutFeedback>
 
         <Text>Volume Units</Text>
         <Picker selectedValue={this.state.units}
@@ -171,6 +226,7 @@ class EditBatch extends Component {
           onChangeText={this.setBatchVolume}
           value={this.state.volume}
           keyboardType='numeric'
+          style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
         />
 
         <Text>Short Description</Text>
@@ -179,6 +235,7 @@ class EditBatch extends Component {
           onChangeText={this.setDescription}
           value={this.state.description}
           multiline={true}
+          style={[s.b__gray, s.h4, s.ma1, s.ba]}
         />
 
         <Button title="Save" onPress={this.isUpdating() ? this.editBatch : this.addBatch} />
