@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { addNavigationHelpers, DrawerNavigator, StackNavigator, TabNavigator } from "react-navigation";
 
 import BatchList from './components/scenes/batch-list';
+import BatchEdit from './components/scenes/edit-batch';
 import FermenterList from './components/scenes/fermenter-list';
 import FermenterEdit from './components/scenes/edit-fermenter';
 import Login from './components/scenes/login';
@@ -14,6 +15,7 @@ import Login from './components/scenes/login';
 const Stack = {
   login: { screen: Login },
   batchList: { screen: BatchList },
+  batchEdit: { screen: BatchEdit },
   fermenterList: { screen: FermenterList },
   fermenterEdit: { screen: FermenterEdit }
 };
