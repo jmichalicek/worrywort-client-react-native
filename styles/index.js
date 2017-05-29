@@ -7,7 +7,13 @@ export const colorPalette = {
       red: "#FF0000",
       green: "#008000",
       white: "#FFFFFF",
-      gray: "#808080"
+      gray: "#808080",
+      black: "#000000",
+      darkGrey: "#a9a9a9",
+      darkGray: "#a9a9a9",
+      dimgrey: "#696969",
+      greenYellow: "#ADFF2F",
+      yellowGreen: "#9ACD32"
     }
   }
 }

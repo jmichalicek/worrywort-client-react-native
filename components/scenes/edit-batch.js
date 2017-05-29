@@ -184,9 +184,9 @@ class EditBatch extends Component {
   render() {
     let statusMessage = null;
     if (this.state.saveError) {
-      statusMessage = <View style={styles.error}><Text>Error Saving Batch</Text></View>;
+      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_red, s.h3, s.mb1]}><Text>Error Saving Batch</Text></View>;
     } else if (this.state.saveSuccess) {
-      statusMessage = <View style={styles.success}><Text>Batch Saved</Text></View>;
+      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_greenyellow, s.h3, s.mb1]}><Text>Batch Saved</Text></View>;
     }
 
     // TODO: better handling of batch type choices
@@ -207,7 +207,8 @@ class EditBatch extends Component {
         <View>
           <Text>Brew Date</Text>
           <TextInput
-            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
+            underlineColorAndroid='dimgrey'
             value={this.state.brewDate.toString()}
             onFocus={this.showAndroidPicker.bind(this, {date: this.state.brewDate})}
             editable={false} /></View>
@@ -231,11 +232,12 @@ class EditBatch extends Component {
 
         <Text>Short Description</Text>
         <TextInput
-          style={{height: 80, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setDescription}
           value={this.state.description}
           multiline={true}
-          style={[s.b__gray, s.h4, s.ma1, s.ba]}
+          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+          numberOfLines={5}
+          underlineColorAndroid='dimgrey'
         />
 
         <Button title="Save" onPress={this.isUpdating() ? this.editBatch : this.addBatch} />
