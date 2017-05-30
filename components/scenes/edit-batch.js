@@ -47,15 +47,17 @@ class EditBatch extends Component {
       isActive: true
     }
 
-    let f = this.props.batch || defaultBatch;
+    // need to copy this object
+    let b = this.props.batch || defaultBatch;
     // TODO: improve this whole thing to use state.batch as an immutablejs object
     this.state = {
-      ...f,
+      batch: Object.assign({}, b),
+      ...b,
       requestingBatch: false,
       saveSuccess: false,
       saveError: false,
       editingExisting: !!(this.props.batch && this.props.batch.id),
-      batchId: f.id
+      batchId: b.id
     };
   }
 
@@ -77,19 +79,33 @@ class EditBatch extends Component {
   }
 
   setNameFromInput = (name) => {
-    this.setState({name: name});
+    //this.setState({name: name});
+    // TODO: Use immutablejs and make life easier
+    // IS THIS SAFE?
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {name: name})}
+    });
   }
 
-  setBatchUnits = (units) => {
-    this.setState({units: units});
+  setBatchUnits = (volumeUnits) => {
+    //this.setState({units: units});
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {volumeUnits: volumeUnits})}
+    });
   }
 
   setBatchVolume = (volume) => {
-    this.setState({volume: volume});
+    //this.setState({volume: volume});
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {volume: volume})}
+    });
   }
 
   setDescription = (description) => {
-    this.setState({description: description});
+    //this.setState({description: description});
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {description: description})}
+    });
   };
 
 
@@ -98,23 +114,26 @@ class EditBatch extends Component {
   };
 
   _volumeFieldDisplayValue = () => {
-    if (typeof this.state.volume !== "string") {
-      return this.state.volume.toString();
+    if (typeof this.state.batch.volume !== "string") {
+      return this.state.batch.volume.toString();
     }
-    return this.state.volume;
+    return this.state.batch.volume;
   }
 
   showAndroidPicker = async (options) => {
     try {
       var newState = {};
       // get date from state
-      const currentDate = this.state.brewDate;
+      const currentDate = this.state.batch.brewDate;
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         console.log('dismissed');
       } else {
         var date = new Date(year, month, day);
-        this.setState({brewDate: date});
+        // this.setState({brewDate: date});
+        this.setState((prevState, props) => {
+          return {batch: Object.assign({}, prevState.batch, {brewDate: date})}
+        });
       }
 
     } catch ({code, message}) {
@@ -127,13 +146,14 @@ class EditBatch extends Component {
     // TODO:
     // hacky kludge for volume.  Finally a reason to use a real graphql client
     // to autoconvert these as they are requested elsewhere
+    // TODO: just use this.state.batch here
     const batch = {
-      name: this.state.name,
-      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
-      type: this.state.type,
-      units: this.state.units,
-      isActive: this.state.isActive,
-      description: this.state.description
+      name: this.state.batch.name,
+      volume: typeof this.state.batch.volume === "string" ? parseFloat(this.state.batch.volume) : this.state.batch.volume,
+      type: this.state.batch.type,
+      volumeUnits: this.state.batch.volumeUnits,
+      isActive: this.state.batch.isActive,
+      description: this.state.batch.description
     }
     createBatch(batch, this.props.auth.jwt).then((responseJson) => {
 
@@ -158,10 +178,10 @@ class EditBatch extends Component {
     // hacky kludge for volume.  Finally a reason to use a real graphql client
     // to autoconvert these as they are requested elsewhere
     const batch = {
-      name: this.state.name,
+      name: this.state.batch.name,
       volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
       type: this.state.type,
-      units: this.state.units,
+      volumeUnits: this.state.batch.volumeUnits,
       isActive: this.state.isActive,
       description: this.state.description
     }
@@ -198,24 +218,24 @@ class EditBatch extends Component {
         <TextInput
           style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
           onChangeText={this.setNameFromInput}
-          value={this.state.name}
+          value={this.state.batch.name}
         />
 
         <TouchableWithoutFeedback
-          onPress={this.showAndroidPicker.bind(this, {date: this.state.brewDate})}
+          onPress={this.showAndroidPicker.bind(this, {date: this.state.batch.brewDate})}
         >
         <View>
           <Text>Brew Date</Text>
           <TextInput
             style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
             underlineColorAndroid='dimgrey'
-            value={this.state.brewDate.toString()}
-            onFocus={this.showAndroidPicker.bind(this, {date: this.state.brewDate})}
+            value={this.state.batch.brewDate.toString()}
+            onFocus={this.showAndroidPicker.bind(this, {date: this.state.batch.brewDate})}
             editable={false} /></View>
         </TouchableWithoutFeedback>
 
         <Text>Volume Units</Text>
-        <Picker selectedValue={this.state.units}
+        <Picker selectedValue={this.state.batch.volumeUnits}
           onValueChange={this.setBatchUnits}>
           <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
           <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
@@ -225,7 +245,7 @@ class EditBatch extends Component {
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setBatchVolume}
-          value={this.state.volume}
+          value={this.state.batch.volume}
           keyboardType='numeric'
           style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
         />
@@ -233,7 +253,7 @@ class EditBatch extends Component {
         <Text>Short Description</Text>
         <TextInput
           onChangeText={this.setDescription}
-          value={this.state.description}
+          value={this.state.batch.description}
           multiline={true}
           style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
           numberOfLines={5}
