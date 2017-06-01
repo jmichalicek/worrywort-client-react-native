@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
+// TODO: on iOS may need to add KeyboardAvoidingView or wrap this in one?
+// TODO: iOS date stuff
+// TODO: max lengths on text inputs
+import { View, Text, TextInput, Button, Picker, Switch, ScrollView } from 'react-native';
 
 // TODO: refactor these out into a DatePicker component
 import { DatePickerAndroid, DatePickerIOS, TouchableWithoutFeedback} from 'react-native';
@@ -36,15 +39,16 @@ class EditBatch extends Component {
       bottleDate: null,
       estimatedBottlingDate: null,
       estimatedDrinkableDate: null,
+      volumeUnits: VolumeUnits.GALLONS,
+      fermenterVolume: null,
+      // TODO: add the rest of these properties to the view
       secondaryFermenterDate: null,
       originalGravity: null,
       finalGravity: null,
       recipeUrl: '',
       boilVolume: null,
-      fermenterVolume: null,
       bottledVolume: null,
-      volumeUnits: VolumeUnits.GALLONS,
-      isActive: true
+      fermenterId: null
     }
 
     // need to copy this object
@@ -52,7 +56,6 @@ class EditBatch extends Component {
     // TODO: improve this whole thing to use state.batch as an immutablejs object
     this.state = {
       batch: Object.assign({}, b),
-      ...b,
       requestingBatch: false,
       saveSuccess: false,
       saveError: false,
@@ -79,7 +82,6 @@ class EditBatch extends Component {
   }
 
   setNameFromInput = (name) => {
-    //this.setState({name: name});
     // TODO: Use immutablejs and make life easier
     // IS THIS SAFE?
     this.setState((prevState, props) => {
@@ -88,27 +90,36 @@ class EditBatch extends Component {
   }
 
   setBatchUnits = (volumeUnits) => {
-    //this.setState({units: units});
     this.setState((prevState, props) => {
       return {batch: Object.assign({}, prevState.batch, {volumeUnits: volumeUnits})}
     });
   }
 
   setBatchVolume = (volume) => {
-    //this.setState({volume: volume});
     this.setState((prevState, props) => {
       return {batch: Object.assign({}, prevState.batch, {volume: volume})}
     });
   }
 
   setDescription = (description) => {
-    //this.setState({description: description});
     this.setState((prevState, props) => {
       return {batch: Object.assign({}, prevState.batch, {description: description})}
     });
   };
 
+  setBrewNotes = (brewNotes) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {brewNotes: brewNotes})}
+    });
+  };
 
+  setTastingNotes = (tastingNotes) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {tastingNotes: tastingNotes})}
+    });
+  };
+
+  // Are we updating an existing batch or creating a new one?
   isUpdating = () => {
     return !!this.state.batchId
   };
@@ -120,42 +131,57 @@ class EditBatch extends Component {
     return this.state.batch.volume;
   }
 
+  setBrewDate = async (brewDate) => {
+    let updatedDate = await this.showAndroidPicker({date: brewDate});
+    this.setState((prevState, props) => {
+      let currentDate = prevState.batch.brewDate;
+      if(updatedDate && updatedDate != currentDate) {
+        return {batch: Object.assign({}, prevState.batch, {brewDate: updatedDate})}
+      } else {
+        return {batch: Object.assign({}, prevState.batch, {brewDate: currentDate})}
+      }
+    });
+  }
+
+  setBottleDate = async (bottleDate) => {
+    if (!bottleDate) {
+      bottleDate = new Date();
+    }
+    let updatedDate = await this.showAndroidPicker({date: bottleDate});
+    this.setState((prevState, props) => {
+      let currentDate = prevState.batch.bottleDate;
+      if(updatedDate && updatedDate != currentDate) {
+        return {batch: Object.assign({}, prevState.batch, {bottleDate: updatedDate})}
+      } else {
+        return {batch: Object.assign({}, prevState.batch, {bottleDate: currentDate})}
+      }
+    });
+  }
+
+  // Show the date picker for Android and return the selected date
   showAndroidPicker = async (options) => {
     try {
-      var newState = {};
-      // get date from state
-      const currentDate = this.state.batch.brewDate;
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
-        console.log('dismissed');
+        return null;
       } else {
         var date = new Date(year, month, day);
-        // this.setState({brewDate: date});
-        this.setState((prevState, props) => {
-          return {batch: Object.assign({}, prevState.batch, {brewDate: date})}
-        });
+        return date;
       }
 
     } catch ({code, message}) {
+      // TODO: properly handle this!!!
       console.warn(`Error in example `, message);
+      return null;
     }
   };
 
   /* Make request to add a batch */
   addBatch = () => {
     // TODO:
-    // hacky kludge for volume.  Finally a reason to use a real graphql client
-    // to autoconvert these as they are requested elsewhere
-    // TODO: just use this.state.batch here
-    const batch = {
-      name: this.state.batch.name,
-      volume: typeof this.state.batch.volume === "string" ? parseFloat(this.state.batch.volume) : this.state.batch.volume,
-      type: this.state.batch.type,
-      volumeUnits: this.state.batch.volumeUnits,
-      isActive: this.state.batch.isActive,
-      description: this.state.batch.description
-    }
-    createBatch(batch, this.props.auth.jwt).then((responseJson) => {
+    // deal with int and float units which may be strings but need to be int or float types
+    // edit fermenter has hacky kludge, but must be a better way, such as when setting the state.
+    createBatch(this.state.batch, this.props.auth.jwt).then((responseJson) => {
 
       // { data: { createBatch: { id: '1' } } }
       if (responseJson.data && responseJson.data.createBatch && responseJson.data.createBatch.id) {
@@ -175,17 +201,9 @@ class EditBatch extends Component {
   /* Make request to update a batch */
   editBatch = () => {
     // TODO:
-    // hacky kludge for volume.  Finally a reason to use a real graphql client
-    // to autoconvert these as they are requested elsewhere
-    const batch = {
-      name: this.state.batch.name,
-      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
-      type: this.state.type,
-      volumeUnits: this.state.batch.volumeUnits,
-      isActive: this.state.isActive,
-      description: this.state.description
-    }
-    updateBatch(this.state.batchId, batch, this.props.auth.jwt).then((responseJson) => {
+    // deal with int and float units which may be strings but need to be int or float types
+    // edit fermenter has hacky kludge, but must be a better way, such as when setting the state.
+    updateBatch(this.state.batchId, this.state.batch, this.props.auth.jwt).then((responseJson) => {
       // { data: { createBatch: { id: '1' } } }
       if (responseJson.data && responseJson.data.updateBatch && responseJson.data.updateBatch.id) {
         this.setState({
@@ -211,7 +229,7 @@ class EditBatch extends Component {
 
     // TODO: better handling of batch type choices
     return (
-      <View>
+        <ScrollView style={[s.ma1]}>
         <Text>{this.isUpdating() ? "Editing" : "Adding" }</Text>
         { statusMessage }
         <Text>Name</Text>
@@ -222,7 +240,7 @@ class EditBatch extends Component {
         />
 
         <TouchableWithoutFeedback
-          onPress={this.showAndroidPicker.bind(this, {date: this.state.batch.brewDate})}
+          onPress={this.setBrewDate.bind(this, this.state.batch.brewDate)}
         >
         <View>
           <Text>Brew Date</Text>
@@ -230,7 +248,7 @@ class EditBatch extends Component {
             style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
             underlineColorAndroid='dimgrey'
             value={this.state.batch.brewDate.toString()}
-            onFocus={this.showAndroidPicker.bind(this, {date: this.state.batch.brewDate})}
+            onFocus={this.setBrewDate.bind(this, this.state.batch.brewDate)}
             editable={false} /></View>
         </TouchableWithoutFeedback>
 
@@ -241,11 +259,11 @@ class EditBatch extends Component {
           <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
         </Picker>
 
-        <Text>Volume</Text>
+        <Text>Volume In Fermenter</Text>
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setBatchVolume}
-          value={this.state.batch.volume}
+          value={this.state.batch.fermenterVolume}
           keyboardType='numeric'
           style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
         />
@@ -260,8 +278,41 @@ class EditBatch extends Component {
           underlineColorAndroid='dimgrey'
         />
 
+        <Text>Brew Day Notes</Text>
+        <TextInput
+          onChangeText={this.setBrewNotes}
+          value={this.state.batch.brewNotes}
+          multiline={true}
+          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+          numberOfLines={5}
+          underlineColorAndroid='dimgrey'
+        />
+
+        <TouchableWithoutFeedback onPress={this.setBottleDate.bind(this, this.state.batch.bottleDate)}>
+          <View>
+            <Text>Bottled Date</Text>
+            <TextInput
+              style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
+              underlineColorAndroid='dimgrey'
+              value={this.state.batch.bottleDate ? this.state.batch.bottleDate.toString() : ''}
+              onFocus={this.setBottleDate.bind(this, this.state.batch.bottleDate)}
+              editable={false} />
+          </View>
+        </TouchableWithoutFeedback>
+
+        <Text>Tasting Notes</Text>
+        <TextInput
+          onChangeText={this.setTastingNotes}
+          value={this.state.batch.tastingNotes}
+          multiline={true}
+          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+          numberOfLines={5}
+          underlineColorAndroid='dimgrey'
+        />
+
         <Button title="Save" onPress={this.isUpdating() ? this.editBatch : this.addBatch} />
-      </View>);
+      </ScrollView>
+    );
   }
 
   loadBatch(jwt = null, batchId = null) {
