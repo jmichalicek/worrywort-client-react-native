@@ -41,14 +41,16 @@ class EditBatch extends Component {
       estimatedDrinkableDate: null,
       volumeUnits: VolumeUnits.GALLONS,
       fermenterVolume: null,
-      // TODO: add the rest of these properties to the view
-      secondaryFermenterDate: null,
-      originalGravity: null,
-      finalGravity: null,
       recipeUrl: '',
+      fermenterId: null,
+      // TODO: add the rest of these properties to the view
+
+      originalGravity: null,
       boilVolume: null,
       bottledVolume: null,
-      fermenterId: null
+      secondaryFermenterDate: null,
+      finalGravity: null,
+
     }
 
     // need to copy this object
@@ -80,6 +82,18 @@ class EditBatch extends Component {
       this.loadBatch(this.props.auth.jwt);
     }
   }
+
+  // Are we updating an existing batch or creating a new one?
+  isUpdating = () => {
+    return !!this.state.batchId
+  };
+
+  _volumeFieldDisplayValue = () => {
+    if (typeof this.state.batch.volume !== "string") {
+      return this.state.batch.volume.toString();
+    }
+    return this.state.batch.volume;
+  };
 
   setNameFromInput = (name) => {
     // TODO: Use immutablejs and make life easier
@@ -119,16 +133,19 @@ class EditBatch extends Component {
     });
   };
 
-  // Are we updating an existing batch or creating a new one?
-  isUpdating = () => {
-    return !!this.state.batchId
+  setRecipeUrl = (recipeUrl) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {recipeUrl: recipeUrl})}
+    });
   };
 
-  _volumeFieldDisplayValue = () => {
-    if (typeof this.state.batch.volume !== "string") {
-      return this.state.batch.volume.toString();
-    }
-    return this.state.batch.volume;
+  setFermenterId = (fermenterId) => {
+    // or just set the fermenter and extract id for create/update
+    console.log('Ferm id');
+    console.log(fermenterId);
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {fermenterId: fermenterId})}
+    });
   }
 
   setBrewDate = async (brewDate) => {
@@ -229,87 +246,118 @@ class EditBatch extends Component {
 
     // TODO: better handling of batch type choices
     return (
-        <ScrollView style={[s.ma1]}>
-        <Text>{this.isUpdating() ? "Editing" : "Adding" }</Text>
+      <ScrollView style={[s.ma1]}>
+        <Text style={[s.mv3, s.f1]}>{this.isUpdating() ? "Editing" : "Create" } Batch</Text>
         { statusMessage }
-        <Text>Name</Text>
-        <TextInput
-          style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
-          onChangeText={this.setNameFromInput}
-          value={this.state.batch.name}
-        />
 
-        <TouchableWithoutFeedback
-          onPress={this.setBrewDate.bind(this, this.state.batch.brewDate)}
-        >
-        <View>
-          <Text>Brew Date</Text>
+        <View style={[s.bt, s.bb]}>
+          <Text style={[s.mv3, s.f3]}>Basic Properties</Text>
+          <Text>Name</Text>
           <TextInput
-            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
-            underlineColorAndroid='dimgrey'
-            value={this.state.batch.brewDate.toString()}
-            onFocus={this.setBrewDate.bind(this, this.state.batch.brewDate)}
-            editable={false} /></View>
-        </TouchableWithoutFeedback>
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            onChangeText={this.setNameFromInput}
+            value={this.state.batch.name}
+          />
 
-        <Text>Volume Units</Text>
-        <Picker selectedValue={this.state.batch.volumeUnits}
-          onValueChange={this.setBatchUnits}>
-          <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
-          <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
-        </Picker>
-
-        <Text>Volume In Fermenter</Text>
-        <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-          onChangeText={this.setBatchVolume}
-          value={this.state.batch.fermenterVolume}
-          keyboardType='numeric'
-          style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
-        />
-
-        <Text>Short Description</Text>
-        <TextInput
-          onChangeText={this.setDescription}
-          value={this.state.batch.description}
-          multiline={true}
-          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
-          numberOfLines={5}
-          underlineColorAndroid='dimgrey'
-        />
-
-        <Text>Brew Day Notes</Text>
-        <TextInput
-          onChangeText={this.setBrewNotes}
-          value={this.state.batch.brewNotes}
-          multiline={true}
-          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
-          numberOfLines={5}
-          underlineColorAndroid='dimgrey'
-        />
-
-        <TouchableWithoutFeedback onPress={this.setBottleDate.bind(this, this.state.batch.bottleDate)}>
+          <TouchableWithoutFeedback
+            onPress={this.setBrewDate.bind(this, this.state.batch.brewDate)}
+          >
           <View>
-            <Text>Bottled Date</Text>
+            <Text>Brew Date</Text>
             <TextInput
               style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
               underlineColorAndroid='dimgrey'
-              value={this.state.batch.bottleDate ? this.state.batch.bottleDate.toString() : ''}
-              onFocus={this.setBottleDate.bind(this, this.state.batch.bottleDate)}
-              editable={false} />
-          </View>
-        </TouchableWithoutFeedback>
+              value={this.state.batch.brewDate.toString()}
+              onFocus={this.setBrewDate.bind(this, this.state.batch.brewDate)}
+              editable={false} /></View>
+          </TouchableWithoutFeedback>
 
-        <Text>Tasting Notes</Text>
-        <TextInput
-          onChangeText={this.setTastingNotes}
-          value={this.state.batch.tastingNotes}
-          multiline={true}
-          style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
-          numberOfLines={5}
-          underlineColorAndroid='dimgrey'
-        />
+          <Text style={[s.mt2]}>Fermenter</Text>
+          <Picker selectedValue={this.state.batch.fermenterId}
+            style={[s.h2, s.mb3, s.b__gray]}
+            onValueChange={this.setFermenterId}
+            mode={'dialog'}
+            prompt={'Select a fermenter for this batch'}
+          >
+            <Picker.Item label="Fermenter 1" value={1} />
+            <Picker.Item label="Fermenter 2" value={2} />
+            <Picker.Item label="Fermenter 3" value={3} />
+          </Picker>
 
+        </View>
+        <View style={[s.bb_black, s.bt_black]}>
+          <Text style={[s.mv3, s.f3]}>Advanced Properties</Text>
+
+          <Text>Recipe URL</Text>
+          <TextInput
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            onChangeText={this.setRecipeUrl}
+            value={this.state.batch.recipeUrl}
+            keyboardType={"url"}
+            autoCorrect={false}
+            autoCapitalize={'none'}
+          />
+
+          <Text style={[s.mt2]}>Volume Units</Text>
+          <Picker selectedValue={this.state.batch.volumeUnits}
+            onValueChange={this.setBatchUnits}
+            style={[s.h2, s.mb3, s.b__gray]}
+          >
+            <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
+            <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
+          </Picker>
+
+          <Text>Volume In Fermenter</Text>
+          <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+            onChangeText={this.setBatchVolume}
+            value={this.state.batch.fermenterVolume}
+            keyboardType={'numeric'}
+            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+          />
+
+          <Text>Short Description</Text>
+          <TextInput
+            onChangeText={this.setDescription}
+            value={this.state.batch.description}
+            multiline={true}
+            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            numberOfLines={5}
+            underlineColorAndroid='dimgrey'
+          />
+
+          <Text>Brew Day Notes</Text>
+          <TextInput
+            onChangeText={this.setBrewNotes}
+            value={this.state.batch.brewNotes}
+            multiline={true}
+            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            numberOfLines={5}
+            underlineColorAndroid='dimgrey'
+          />
+
+          <TouchableWithoutFeedback onPress={this.setBottleDate.bind(this, this.state.batch.bottleDate)}>
+            <View>
+              <Text>Bottled Date</Text>
+              <TextInput
+                style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
+                underlineColorAndroid='dimgrey'
+                value={this.state.batch.bottleDate ? this.state.batch.bottleDate.toString() : ''}
+                onFocus={this.setBottleDate.bind(this, this.state.batch.bottleDate)}
+                editable={false} />
+            </View>
+          </TouchableWithoutFeedback>
+
+          <Text>Tasting Notes</Text>
+          <TextInput
+            onChangeText={this.setTastingNotes}
+            value={this.state.batch.tastingNotes}
+            multiline={true}
+            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            numberOfLines={5}
+            underlineColorAndroid='dimgrey'
+          />
+        </View>
         <Button title="Save" onPress={this.isUpdating() ? this.editBatch : this.addBatch} />
       </ScrollView>
     );
