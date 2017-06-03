@@ -76,9 +76,18 @@ export function getAllBatches(token, url = apiUrl) {
   }).then((response) => response.json());
 }
 
-export function getAllFermenters(token, url = apiUrl) {
+export function getAllFermenters(token, filters = {}, url = apiUrl) {
+
+  let fermenterArgs = '';
+  for(let [key, value] of Object.entries(filters)) {
+    fermenterArgs += key + ':' + value + ', ';
+  }
+  if (fermenterArgs) {
+    fermenterArgs = '(' + fermenterArgs.trim().slice(0, -1) + ')';
+  }
+
   const query = {
-    query: "query getFermenters {fermenters {name, id, description, type, units, volume, isActive, isAvailable } }"
+    query: "query getFermenters {fermenters" + fermenterArgs + " {name, id, description, type, units, volume, isActive, isAvailable } }"
   }
   return makeRequest(query, token, url).then((response) => response.json());
 }

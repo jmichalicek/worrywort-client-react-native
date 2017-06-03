@@ -53,7 +53,7 @@ class BatchList extends Component {
     return (
       <View>
         <Text>Your Batches:</Text>
-        <ListView dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
+        <ListView enableEmptySections={true} dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
       </View>);
   }
 

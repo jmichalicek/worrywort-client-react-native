@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 // TODO: on iOS may need to add KeyboardAvoidingView or wrap this in one?
 // TODO: iOS date stuff
 // TODO: max lengths on text inputs
+// TODO: make picker.android.js and picker.ios.js to use here
+//        picker.android.js would use Picker, picker.ios.js would use PickerIOS
 import { View, Text, TextInput, Button, Picker, Switch, ScrollView } from 'react-native';
 
 // TODO: refactor these out into a DatePicker component
@@ -14,6 +16,8 @@ import { styles as s } from "react-native-style-tachyons";
 import Row from '../batch-list-row';
 import { getBatch, createBatch, updateBatch } from '../../utils/api-client';
 import { KeyboardTypes, VolumeUnits, styles } from '../../constants';
+// TODO: move fermenters to a redux store?
+import { getAllFermenters } from '../../utils/api-client';
 
 class EditBatch extends Component {
   // TODO: Make this a function, get at whether we have a batch or not and set to
@@ -62,7 +66,8 @@ class EditBatch extends Component {
       saveSuccess: false,
       saveError: false,
       editingExisting: !!(this.props.batch && this.props.batch.id),
-      batchId: b.id
+      batchId: b.id,
+      fermenters: []
     };
   }
 
@@ -72,6 +77,10 @@ class EditBatch extends Component {
     if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.batchId && !this.state.batch) {
       this.loadBatch(nextProps.auth.jwt);
     }
+
+    if (this.props.auth.jwt && !this.state.isRequestingFermenters && !this.state.fermenters.length > 0) {
+      this.loadFermenters(this.props.auth.jwt);
+    }
   }
 
   componentDidMount() {
@@ -80,6 +89,10 @@ class EditBatch extends Component {
     // a little loading thing could be displayed
     if (this.props.auth.jwt && !this.state.isRequesting && this.props.batchId && !this.state.batch) {
       this.loadBatch(this.props.auth.jwt);
+    }
+
+    if (this.props.auth.jwt && !this.state.isRequestingFermenters) {
+      this.loadFermenters(this.props.auth.jwt);
     }
   }
 
@@ -279,9 +292,9 @@ class EditBatch extends Component {
             mode={'dialog'}
             prompt={'Select a fermenter for this batch'}
           >
-            <Picker.Item label="Fermenter 1" value={1} />
-            <Picker.Item label="Fermenter 2" value={2} />
-            <Picker.Item label="Fermenter 3" value={3} />
+            {[...this.state.fermenters.map((x, i) =>
+              <Picker.Item key={x.id} label={x.name} value={x.id} />
+            )]}
           </Picker>
 
         </View>
@@ -363,7 +376,10 @@ class EditBatch extends Component {
     );
   }
 
-  loadBatch(jwt = null, batchId = null) {
+  /*
+   * Load batch from the API.  Useful for a refresh/reset functionality
+   */
+  loadBatch = (jwt = null, batchId = null) => {
     jwt = jwt || this.props.auth.jwt;
     batchId = batchId || this.props.batchId;
     getBatch(batchId, jwt).then((responseJson) => {
@@ -373,6 +389,21 @@ class EditBatch extends Component {
       });
     });
   }
+
+  /*
+   * Load fermenters into state to be used for the fermenter selection
+   */
+  loadFermenters = (jwt = null) => {
+    this.setState({isRequestingFermenters: true});
+    jwt = jwt || this.props.auth.jwt;
+    getAllFermenters(jwt, filters={isAvailable: true, isActive: true}).then((responseJson) => {
+      const retrievedFermenters = responseJson.data.fermenters.slice();
+      this.setState({
+        fermenters: retrievedFermenters,
+        isRequestingFermenters: false
+      });
+    });
+  };
 };
 
 EditBatch.propTypes = {
