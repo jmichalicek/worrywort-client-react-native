@@ -127,3 +127,13 @@ export function updateFermenter(fermenterId, fermenter, token, url=apiUrl) {
   };
   return makeRequest(mutation, token, url).then((response) => response.json());
 }
+
+export function createBatch(batch, token, url=apiUrl) {
+  const mutation = {
+    query: "mutation putBatch($batch: BatchInput) {batchInput(batch: $batch) { id }}",
+    variables: {
+      "batch": batch
+    }
+  };
+  return makeRequest(mutation, token, url).then((response) => response.json());
+}
