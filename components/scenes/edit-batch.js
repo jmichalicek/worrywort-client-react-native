@@ -47,14 +47,11 @@ class EditBatch extends Component {
       fermenterVolume: null,
       recipeUrl: '',
       fermenterId: null,
-      // TODO: add the rest of these properties to the view
-
       originalGravity: null,
+      finalGravity: null,
+      secondaryFermenterDate: null,
       boilVolume: null,
       bottledVolume: null,
-      secondaryFermenterDate: null,
-      finalGravity: null,
-
     }
 
     // need to copy this object
@@ -299,7 +296,7 @@ class EditBatch extends Component {
 
     // TODO: better handling of batch type choices
     return (
-      <ScrollView style={[s.ma1]}>
+      <ScrollView style={[s.ph1, s.mb2]}>
         <Text style={[s.mv3, s.f1]}>{this.isUpdating() ? "Editing" : "Create" } Batch</Text>
         { statusMessage }
 
@@ -307,9 +304,10 @@ class EditBatch extends Component {
           <Text style={[s.mv3, s.f3]}>Basic Properties</Text>
           <Text>Name</Text>
           <TextInput
-            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
             onChangeText={this.setNameFromInput}
             value={this.state.batch.name}
+            maxLength={255}
           />
 
           <TouchableWithoutFeedback
@@ -318,7 +316,7 @@ class EditBatch extends Component {
           <View>
             <Text>Brew Date</Text>
             <TextInput
-              style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
+              style={[s.b__gray, s.h3, s.mb3,, s.ba, s.black]}
               underlineColorAndroid='dimgrey'
               value={this.state.batch.brewDate.toString()}
               onFocus={this.setBrewDate.bind(this, this.state.batch.brewDate)}
@@ -343,12 +341,13 @@ class EditBatch extends Component {
 
           <Text>Recipe URL</Text>
           <TextInput
-            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
             onChangeText={this.setRecipeUrl}
             value={this.state.batch.recipeUrl}
             keyboardType={"url"}
             autoCorrect={false}
             autoCapitalize={'none'}
+            maxLength={255}
           />
 
           <Text style={[s.mt2]}>Volume Units</Text>
@@ -360,13 +359,51 @@ class EditBatch extends Component {
             <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
           </Picker>
 
+          <Text>Original Gravity</Text>
+          <TextInput
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
+            onChangeText={this.setOriginalGravity}
+            value={this.state.batch.originalGravity}
+            keyboardType={"numeric"}
+            autoCorrect={false}
+            autoCapitalize={'none'}
+          />
+
+          <Text>Final Gravity</Text>
+          <TextInput
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
+            onChangeText={this.setFinalGravity}
+            value={this.state.batch.finalGravity}
+            keyboardType={"numeric"}
+            autoCorrect={false}
+            autoCapitalize={'none'}
+          />
+
           <Text>Volume In Fermenter</Text>
           <TextInput
             style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
             onChangeText={this.setBatchVolume}
             value={this.state.batch.fermenterVolume}
             keyboardType={'numeric'}
-            style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba]}
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
+          />
+
+          <Text>Volume Boiled</Text>
+          <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+            onChangeText={this.setBoilVolume}
+            value={this.state.batch.boilVolume}
+            keyboardType={'numeric'}
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
+          />
+
+          <Text>Volume Bottled</Text>
+          <TextInput
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+            onChangeText={this.setBottledVolume}
+            value={this.state.batch.bottledVolume}
+            keyboardType={'numeric'}
+            style={[s.b__gray, s.h3, s.mb3, s.ba]}
           />
 
           <Text>Short Description</Text>
@@ -374,7 +411,7 @@ class EditBatch extends Component {
             onChangeText={this.setDescription}
             value={this.state.batch.description}
             multiline={true}
-            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            style={[s.b__gray, s.ba, s.tl, {textAlignVertical: 'top'}]}
             numberOfLines={5}
             underlineColorAndroid='dimgrey'
           />
@@ -384,16 +421,28 @@ class EditBatch extends Component {
             onChangeText={this.setBrewNotes}
             value={this.state.batch.brewNotes}
             multiline={true}
-            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            style={[s.b__gray, s.ba, s.tl, {textAlignVertical: 'top'}]}
             numberOfLines={5}
             underlineColorAndroid='dimgrey'
           />
 
+          <TouchableWithoutFeedback onPress={this.setSecondaryFermenterDate.bind(this, this.state.batch.secondaryFermenterDate)}>
+            <View>
+              <Text>Date Moved To Secondary Fermenter</Text>
+              <TextInput
+                style={[s.b__gray, s.h3, s.mb3, s.ba, s.black]}
+                underlineColorAndroid='dimgrey'
+                value={this.state.batch.secondaryFermenterDate ? this.state.batch.secondaryFermenterDate.toString() : ''}
+                onFocus={this.setSecondaryFermenterDate.bind(this, this.state.batch.secondaryFermenterDate)}
+                editable={false} />
+            </View>
+          </TouchableWithoutFeedback>
+
           <TouchableWithoutFeedback onPress={this.setBottleDate.bind(this, this.state.batch.bottleDate)}>
             <View>
-              <Text>Bottled Date</Text>
+              <Text>Date Bottled/Racked</Text>
               <TextInput
-                style={[s.b__gray, s.h3, s.pb2, s.ma1, s.ba, s.black]}
+                style={[s.b__gray, s.h3, s.mb3, s.ba, s.black]}
                 underlineColorAndroid='dimgrey'
                 value={this.state.batch.bottleDate ? this.state.batch.bottleDate.toString() : ''}
                 onFocus={this.setBottleDate.bind(this, this.state.batch.bottleDate)}
@@ -406,7 +455,7 @@ class EditBatch extends Component {
             onChangeText={this.setTastingNotes}
             value={this.state.batch.tastingNotes}
             multiline={true}
-            style={[s.b__gray, s.ma1, s.ba, s.tl, {textAlignVertical: 'top'}]}
+            style={[s.b__gray, s.ba, s.tl, {textAlignVertical: 'top'}]}
             numberOfLines={5}
             underlineColorAndroid='dimgrey'
           />
