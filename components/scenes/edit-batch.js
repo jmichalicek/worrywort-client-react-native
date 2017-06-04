@@ -152,10 +152,38 @@ class EditBatch extends Component {
     });
   };
 
+  setOriginalGravity = (originalGravity) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {originalGravity: originalGravity})}
+    });
+  };
+
+  setFinalGravity = (finalGravity) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {finalGravity: finalGravity})}
+    });
+  };
+
+  setBoilVolume = (boilVolume) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {boilVolume: boilVolume})}
+    });
+  };
+
+  setBottledVolume = (bottledVolume) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {bottledVolume: bottledVolume})}
+    });
+  };
+
+  setFinalGravity = (finalGravity) => {
+    this.setState((prevState, props) => {
+      return {batch: Object.assign({}, prevState.batch, {finalGravity: finalGravity})}
+    });
+  };
+
   setFermenterId = (fermenterId) => {
-    // or just set the fermenter and extract id for create/update
-    console.log('Ferm id');
-    console.log(fermenterId);
+    // or just set the fermenter and extract id for create/update?
     this.setState((prevState, props) => {
       return {batch: Object.assign({}, prevState.batch, {fermenterId: fermenterId})}
     });
@@ -171,7 +199,7 @@ class EditBatch extends Component {
         return {batch: Object.assign({}, prevState.batch, {brewDate: currentDate})}
       }
     });
-  }
+  };
 
   setBottleDate = async (bottleDate) => {
     if (!bottleDate) {
@@ -186,7 +214,19 @@ class EditBatch extends Component {
         return {batch: Object.assign({}, prevState.batch, {bottleDate: currentDate})}
       }
     });
-  }
+  };
+
+  setSecondaryFermenterDate = async (secondaryFermenterDate) => {
+    let updatedDate = await this.showAndroidPicker({date: secondaryFermenterDate});
+    this.setState((prevState, props) => {
+      let currentDate = prevState.batch.secondaryFermenterDate;
+      if(updatedDate && updatedDate != currentDate) {
+        return {batch: Object.assign({}, prevState.batch, {secondaryFermenterDate: secondaryFermenterDate})}
+      } else {
+        return {batch: Object.assign({}, prevState.batch, {secondaryFermenterDate: currentDate})}
+      }
+    });
+  };
 
   // Show the date picker for Android and return the selected date
   showAndroidPicker = async (options) => {
