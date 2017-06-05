@@ -25,12 +25,20 @@ class EditBatch extends Component {
   // no headerRight button.  react-navigation does not implement nav in a way which
   // sanely lets you put a button, such as a save button, which needs to operate on
   // current state/props. :
-  static navigationOptions = ({ navigation, screenProps }) => ({
+  static navigationOptions = ({ navigation, screenProps }) => {
+    params = navigation.state.params;
+    saveButton = <Button title={"Save"} onPress={() => { 'saveBatch' in params ? params.saveBatch() : null }} />
+    return ({
     title: 'Batch',
-    // headerRight: <Button title={"Save"} onPress={(navigation) => {console.log(navigation.state)}} />
-  });
+    headerRight: saveButton
+  })};
 
   constructor(props) {
+    // This abuses react-navigations navigation.setState().
+    // After this.state is set, we call this.props.navigation.setState()
+    // and add a reference to the save function (possibly should just add reference to the current view instance)
+    // so that a correct save function which knows about the view's internal state, such as current batch,
+    // may be called.
     super(props);
 
     const currentTime = new Date();
@@ -64,12 +72,13 @@ class EditBatch extends Component {
       saveError: false,
       editingExisting: !!(this.props.batch && this.props.batch.id),
       batchId: b.id,
-      fermenters: []
+      fermenters: [],
     };
   }
 
   // batches in Redux store version
   componentWillReceiveProps(nextProps) {
+
     // should this go into componentDidUpdate and use this.props?
     if (nextProps.auth.jwt && !this.state.isRequesting && nextProps.batchId && !this.state.batch) {
       this.loadBatch(nextProps.auth.jwt);
@@ -81,9 +90,18 @@ class EditBatch extends Component {
   }
 
   componentDidMount() {
+    // react-navigation abuse!  Unsure of a better way to do this, though.
+    // set a reference to the save method specific to this scene on the navigator props
+    // so that the save() button can work.
+    this.props.navigation.setParams({
+      saveBatch: this.saveBatch
+    });
+
     // mounting happens different with react-native 0.44 and react-navigation
     // so we need to look these up here or maybe just do it in render?  that way
     // a little loading thing could be displayed
+    // TODO: Pretty sure I was just too tired and had no idea what was happening when this was
+    // written - clean it and componentWillReceiveProps up?
     if (this.props.auth.jwt && !this.state.isRequesting && this.props.batchId && !this.state.batch) {
       this.loadBatch(this.props.auth.jwt);
     }
@@ -95,6 +113,8 @@ class EditBatch extends Component {
 
   // Are we updating an existing batch or creating a new one?
   isUpdating = () => {
+    // TODO: change to this.state.batch.id after updating
+    // the create fucntion to update the entire batch object
     return !!this.state.batchId
   };
 
@@ -107,7 +127,6 @@ class EditBatch extends Component {
 
   setNameFromInput = (name) => {
     // TODO: Use immutablejs and make life easier
-    // IS THIS SAFE?
     this.setState((prevState, props) => {
       return {batch: Object.assign({}, prevState.batch, {name: name})}
     });
@@ -251,6 +270,7 @@ class EditBatch extends Component {
     createBatch(this.state.batch, this.props.auth.jwt).then((responseJson) => {
 
       // { data: { createBatch: { id: '1' } } }
+      // TODO: get the whole batch back and set it as this.state.batch
       if (responseJson.data && responseJson.data.createBatch && responseJson.data.createBatch.id) {
         this.setState({
           saveSuccess: true,
@@ -286,7 +306,16 @@ class EditBatch extends Component {
     });
   };
 
+  saveBatch = () => {
+    if (this.state.editingExisting) {
+      return this.editBatch();
+    } else {
+      return this.addBatch();
+    }
+  }
+
   render() {
+    console.log(this.state.saveCounter);
     let statusMessage = null;
     if (this.state.saveError) {
       statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_red, s.h3, s.mb1]}><Text>Error Saving Batch</Text></View>;
@@ -460,7 +489,7 @@ class EditBatch extends Component {
             underlineColorAndroid='dimgrey'
           />
         </View>
-        <Button title="Save" onPress={this.isUpdating() ? this.editBatch : this.addBatch} />
+        <Button title="Save" onPress={this.saveBatch} />
       </ScrollView>
     );
   }
