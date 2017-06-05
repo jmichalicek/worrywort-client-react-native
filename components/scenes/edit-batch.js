@@ -27,10 +27,10 @@ class EditBatch extends Component {
   // current state/props. :
   static navigationOptions = ({ navigation, screenProps }) => {
     params = navigation.state.params;
-    saveButton = <Button title={"Save"} onPress={() => { 'saveBatch' in params ? params.saveBatch() : null }} />
+    const saveButton = <Button title={"Save"} onPress={params.saveBatch} disabled={! this.params.saveBatch} />
     return ({
-    title: 'Batch',
-    headerRight: saveButton
+      title: 'Batch',
+      headerRight: saveButton
   })};
 
   constructor(props) {
