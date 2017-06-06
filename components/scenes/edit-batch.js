@@ -20,14 +20,12 @@ import { KeyboardTypes, VolumeUnits, styles } from '../../constants';
 import { getAllFermenters } from '../../utils/api-client';
 
 class EditBatch extends Component {
-  // TODO: Make this a function, get at whether we have a batch or not and set to
-  // Adding or Editing Batch
-  // no headerRight button.  react-navigation does not implement nav in a way which
-  // sanely lets you put a button, such as a save button, which needs to operate on
-  // current state/props. :
+
   static navigationOptions = ({ navigation, screenProps }) => {
     params = navigation.state.params;
-    const saveButton = <Button title={"Save"} onPress={params.saveBatch} disabled={! this.params.saveBatch} />
+    // onPress MUST have a function, so we either give it a real one or a no-op
+    const saveBatch = (params && 'saveBatch' in params) ? params.saveBatch : () => {};
+    const saveButton = <Button title={"Save"} onPress={saveBatch} disabled={!saveBatch} />
     return ({
       title: 'Batch',
       headerRight: saveButton
@@ -268,7 +266,6 @@ class EditBatch extends Component {
     // deal with int and float units which may be strings but need to be int or float types
     // edit fermenter has hacky kludge, but must be a better way, such as when setting the state.
     createBatch(this.state.batch, this.props.auth.jwt).then((responseJson) => {
-
       // { data: { createBatch: { id: '1' } } }
       // TODO: get the whole batch back and set it as this.state.batch
       if (responseJson.data && responseJson.data.createBatch && responseJson.data.createBatch.id) {
@@ -315,12 +312,15 @@ class EditBatch extends Component {
   }
 
   render() {
-    console.log(this.state.saveCounter);
     let statusMessage = null;
     if (this.state.saveError) {
-      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_red, s.h3, s.mb1]}><Text>Error Saving Batch</Text></View>;
+      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_red, s.h3, s.mb1]}>
+          <Text>Error Saving Batch</Text>
+        </View>;
     } else if (this.state.saveSuccess) {
-      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_greenyellow, s.h3, s.mb1]}><Text>Batch Saved</Text></View>;
+      statusMessage = <View style={[s.ma1, s.mb2, s.jcfs, s.pa2, s.bg_greenYellow, s.h3, s.mb1]}>
+          <Text>Batch Saved</Text>
+        </View>;
     }
 
     // TODO: better handling of batch type choices

@@ -103,7 +103,7 @@ export function getFermenter(fermenterId, token, url = apiUrl) {
 
 export function createFermenter(fermenter, token, url=apiUrl) {
   const mutation = {
-    query: "mutation putFermenter($fermenter: FermenterInput) {createFermenter(fermenter: $fermenter) { id }}",
+    query: "mutation putFermenter($fermenter: FermenterInput!) {createFermenter(fermenter: $fermenter) { id }}",
     variables: {
       "fermenter": fermenter
       // "name": fermenter.name,
@@ -130,7 +130,7 @@ export function updateFermenter(fermenterId, fermenter, token, url=apiUrl) {
 
 export function createBatch(batch, token, url=apiUrl) {
   const mutation = {
-    query: "mutation putBatch($batch: BatchInput) {batchInput(batch: $batch) { id }}",
+    query: "mutation createBatch($batch: BatchInput!) {createBatch(batch: $batch) { id }}",
     variables: {
       "batch": batch
     }
