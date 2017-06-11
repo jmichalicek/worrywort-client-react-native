@@ -320,7 +320,7 @@ class EditBatch extends Component {
     let messageText = '';
     if (this.state.saveError) {
       messageText = 'Error Saving Batch';
-    } else if (this.state.saveSucces) {
+    } else if (this.state.saveSuccess) {
       messageText = 'Batch Saved';
     }
     let statusMessage = null;

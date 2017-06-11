@@ -1,20 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
+
+import { styles as s } from "react-native-style-tachyons";
+
 import { connect } from 'react-redux';
 import Row from '../batch-list-row';
 import { getFermenter, createFermenter, updateFermenter } from '../../utils/api-client';
 import { FermenterTypes, VolumeUnits, styles } from '../../constants';
 
 class EditFermenter extends Component {
-  // TODO: Make this a function, get at whether we have a fermenter or not and set to
-  // Adding or Editing Fermenter
-  // no headerRight button.  react-navigation does not implement nav in a way which
-  // sanely lets you put a button, such as a save button, which needs to operate on
-  // current state/props. :
-  static navigationOptions = ({ navigation, screenProps }) => ({
-    title: 'Fermenter',
-    // headerRight: <Button title={"Save"} onPress={(navigation) => {console.log(navigation.state)}} />
-  });
+  static navigationOptions = ({ navigation, screenProps }) => {
+    params = navigation.state.params;
+    // onPress MUST have a function, so we either give it a real one or a no-op
+    const saveFermenter = (params && 'saveFermenter' in params) ? params.saveFermenter : () => {};
+    const saveButton = <Button title={"Save"} onPress={saveFermenter} disabled={!saveFermenter} />
+    return ({
+      title: 'Fermenter',
+      headerRight: saveButton
+  })};
 
   constructor(props) {
     super(props);
@@ -42,6 +45,11 @@ class EditFermenter extends Component {
   }
 
   componentDidMount() {
+
+    // make sure our save button in the header works by attaching a function to it
+    this.props.navigation.setParams({
+      saveFermenter: this.saveFermenter
+    });
     // mounting happens different with react-native 0.44 and react-navigation
     // so we need to look these up here or maybe just do it in render?  that way
     // a little loading thing could be displayed
@@ -162,12 +170,33 @@ class EditFermenter extends Component {
     });
   };
 
+  saveFermenter = () => {
+    if (this.isUpdating()) {
+      return this.editFermenter();
+    } else {
+      return this.addFermenter();
+    }
+  }
+
   render() {
-    let statusMessage = null;
+
+    const textInputStyle = [s.b__gray, s.h3, s.mb3, s.ba, s.black];
+    const multilineTextInputStyle = [s.b__gray, s.ba, s.tl, {textAlignVertical:  'top'}];
+    const saveMessageStyle = [s.ma1, s.mb2, s.jcfs, s.pa2, s.h3, s.mb1, s.tc];
+
+    // if (this.state.saveError) {
+    let messageText = '';
     if (this.state.saveError) {
-      statusMessage = <View style={styles.error}><Text>Error Saving Fermenter</Text></View>;
+      messageText = 'Error Saving Fermenter';
     } else if (this.state.saveSuccess) {
-      statusMessage = <View style={styles.success}><Text>Fermenter Saved</Text></View>;
+      messageText = 'Fermenter Saved';
+    }
+    let statusMessage = null;
+    if (this.state.saveError || this.state.saveSuccess) {
+      statusMessage =
+        <View style={[...saveMessageStyle, ...(this.state.saveError ? [s.bg_red] : [s.bg_greenYellow]) ]}>
+          <Text style={[s.white, s.f3]}>{ messageText }</Text>
+        </View>;
     }
 
     // TODO: better handling of fermenter type choices
@@ -217,8 +246,6 @@ class EditFermenter extends Component {
         <Switch onValueChange={this.setIsActive}
           style={{marginBottom: 10}}
           value={this.state.fermenter.isActive} />
-
-        <Button title="Save" onPress={this.isUpdating() ? this.editFermenter : this.addFermenter} />
       </View>);
   }
 
