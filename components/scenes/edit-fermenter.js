@@ -19,17 +19,16 @@ class EditFermenter extends Component {
   constructor(props) {
     super(props);
     const defaultFermenter = {
-      name: '', volume: '', type: 'BUCKET', units: 'GALLONS',
+      name: '', volume: null, type: 'BUCKET', units: 'GALLONS',
       isActive: true
     }
     let f = this.props.fermenter || defaultFermenter;
     // TODO: improve this whole thing to use state.fermenter as an immutablejs object
     this.state = {
-      ...f,
+      fermenter: Object.assign({}, f),
       requestingFermenter: false,
       saveSuccess: false,
       saveError: false,
-      editingExisting: !!(this.props.fermenter && this.props.fermenter.id),
       fermenterId: f.id
     };
   }
@@ -52,63 +51,93 @@ class EditFermenter extends Component {
   }
 
   setNameFromInput = (name) => {
-    this.setState({name: name});
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {name: name})}
+    });
   }
 
   setFermenterType = (type) => {
-    this.setState({type: type});
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {type: type})}
+    });
   }
 
   setFermenterUnits = (units) => {
-    this.setState({units: units});
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {units: units})}
+    });
   }
 
   setFermenterVolume = (volume) => {
-    this.setState({volume: volume});
+    this.setState((prevState, props) => {
+      const floatVolume = typeof volume === "string" ? parseFloat(volume) : volume
+      return {fermenter: Object.assign({}, prevState.fermenter, {volume: floatVolume})}
+    });
   }
 
   setDescription = (description) => {
-    this.setState({description: description});
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {description: description})}
+    });
   };
 
   setIsActive = (isActive) => {
-    this.setState({isActive: isActive});
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {isActive: isActive})}
+    });
+  };
+
+  setId = (id) => {
+    this.setState((prevState, props) => {
+      return {fermenter: Object.assign({}, prevState.fermenter, {id: id})}
+    });
   };
 
   isUpdating = () => {
-    return !!this.state.fermenterId
+    return !!this.state.fermenter.id
   };
 
   _volumeFieldDisplayValue = () => {
-    if (typeof this.state.volume !== "string") {
-      return this.state.volume.toString();
+    if (typeof this.state.fermenter.volume !== "string") {
+      return this.state.fermenter.volume.toString();
     }
-    return this.state.volume;
+    return this.state.fermenter.volume;
   }
 
   /* Make request to add a fermenter */
+  prepareFermenter = (fermenter) => {
+    /* Prepare the fermenter for create/update in GraphQL API
+     * Ensure correct data types, etc
+     */
+     let preparedFermenter = Object.assign({}, this.state.fermenter);
+     if (typeof preparedFermenter.volume === "string") {
+       preparedFermenter.volume = parseFloat(preparedFermenter.volume);
+     }
+     return preparedFermenter;
+  };
+
   addFermenter = () => {
     // TODO:
     // hacky kludge for volume.  Finally a reason to use a real graphql client
     // to autoconvert these as they are requested elsewhere
-    const fermenter = {
-      name: this.state.name,
-      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
-      type: this.state.type,
-      units: this.state.units,
-      isActive: this.state.isActive,
-      description: this.state.description
-    }
-    createFermenter(fermenter, this.props.auth.jwt).then((responseJson) => {
-
+    // const fermenter = {
+    //   name: this.state.name,
+    //   volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
+    //   type: this.state.type,
+    //   units: this.state.units,
+    //   isActive: this.state.isActive,
+    //   description: this.state.description
+    // }
+    createFermenter(this.prepareFermenter(this.state.fermenter), this.props.auth.jwt).then((responseJson) => {
+      // TODO: request all fermenter data back and set the fermenter as a single object
       // { data: { createFermenter: { id: '1' } } }
       if (responseJson.data && responseJson.data.createFermenter && responseJson.data.createFermenter.id) {
         this.setState({
           saveSuccess: true,
           saveError: false,
           fermenterId: responseJson.data.createFermenter.id,
-          editingExisting: true
         });
+        this.setId(responseJson.data.createFermenter.id);
       }
     }).catch((error) => {
         console.log(error);
@@ -118,25 +147,13 @@ class EditFermenter extends Component {
 
   /* Make request to update a fermenter */
   editFermenter = () => {
-    // TODO:
-    // hacky kludge for volume.  Finally a reason to use a real graphql client
-    // to autoconvert these as they are requested elsewhere
-    const fermenter = {
-      name: this.state.name,
-      volume: typeof this.state.volume === "string" ? parseFloat(this.state.volume) : this.state.volume,
-      type: this.state.type,
-      units: this.state.units,
-      isActive: this.state.isActive,
-      description: this.state.description
-    }
-    updateFermenter(this.state.fermenterId, fermenter, this.props.auth.jwt).then((responseJson) => {
+    updateFermenter(this.prepareFermenter(this.state.fermenter), this.props.auth.jwt).then((responseJson) => {
       // { data: { createFermenter: { id: '1' } } }
       if (responseJson.data && responseJson.data.updateFermenter && responseJson.data.updateFermenter.id) {
         this.setState({
           saveSuccess: true,
           saveError: false,
           fermenterId: responseJson.data.updateFermenter.id,
-          editingExisting: true
         });
       }
     }).catch((error) => {
@@ -162,10 +179,10 @@ class EditFermenter extends Component {
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setNameFromInput}
-          value={this.state.name}
+          value={this.state.fermenter.name}
         />
         <Text>Fermenter Type</Text>
-        <Picker selectedValue={this.state.type}
+        <Picker selectedValue={this.state.fermenter.type}
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onValueChange={this.setFermenterType}>
           <Picker.Item label="Bucket" value={FermenterTypes.BUCKET} />
@@ -174,7 +191,7 @@ class EditFermenter extends Component {
         </Picker>
 
         <Text>Volume Units</Text>
-        <Picker selectedValue={this.state.units}
+        <Picker selectedValue={this.state.fermenter.units}
           onValueChange={this.setFermenterUnits}>
           <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
           <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
@@ -184,7 +201,7 @@ class EditFermenter extends Component {
         <TextInput
           style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setFermenterVolume}
-          value={this.state.volume}
+          value={this.state.fermenter.volume}
           keyboardType='numeric'
         />
 
@@ -192,14 +209,14 @@ class EditFermenter extends Component {
         <TextInput
           style={{height: 80, borderColor: 'gray', borderWidth: 1, }}
           onChangeText={this.setDescription}
-          value={this.state.description}
+          value={this.state.fermenter.description}
           multiline={true}
         />
 
         <Text>Make Fermenter Active</Text>
         <Switch onValueChange={this.setIsActive}
           style={{marginBottom: 10}}
-          value={this.state.isActive} />
+          value={this.state.fermenter.isActive} />
 
         <Button title="Save" onPress={this.isUpdating() ? this.editFermenter : this.addFermenter} />
       </View>);

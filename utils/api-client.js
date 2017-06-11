@@ -89,6 +89,8 @@ export function getAllFermenters(token, filters = {}, url = apiUrl) {
   const query = {
     query: "query getFermenters {fermenters" + fermenterArgs + " {name, id, description, type, units, volume, isActive, isAvailable } }"
   }
+  // TODO: make volume be a float here?  It seems to be coming in as a string
+  // a real graphQL client might fix that.
   return makeRequest(query, token, url).then((response) => response.json());
 }
 
@@ -97,7 +99,8 @@ export function getFermenter(fermenterId, token, url = apiUrl) {
     query: "query getFermenter($id: ID!) { fermenter(id: $id) { id, name, description, type, units, volume }}",
     variables: {"id": fermenterId}
   }
-
+  // TODO: make volume be a float here?  It seems to be coming in as a string
+  // a real graphQL client might fix that.
   return makeRequest(query, token, url).then((response) => response.json());
 };
 
@@ -117,12 +120,14 @@ export function createFermenter(fermenter, token, url=apiUrl) {
   return makeRequest(mutation, token, url).then((response) => response.json());
 }
 
-export function updateFermenter(fermenterId, fermenter, token, url=apiUrl) {
+export function updateFermenter(fermenter, token, url=apiUrl) {
+  // need to strip the id for FermenterInput type
+  let {id, ...fermenterInput} = fermenter;
   const mutation = {
     query: "mutation updateFermenter($id: Int!, $fermenter: FermenterInput!) {updateFermenter(id: $id, fermenter: $fermenter) { id }}",
     variables: {
-      "id": fermenterId,
-      "fermenter": fermenter
+      "id": id,
+      "fermenter": fermenterInput
     }
   };
   return makeRequest(mutation, token, url).then((response) => response.json());
