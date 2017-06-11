@@ -76,9 +76,18 @@ export function getAllBatches(token, url = apiUrl) {
   }).then((response) => response.json());
 }
 
-export function getAllFermenters(token, url = apiUrl) {
+export function getAllFermenters(token, filters = {}, url = apiUrl) {
+
+  let fermenterArgs = '';
+  for(let [key, value] of Object.entries(filters)) {
+    fermenterArgs += key + ':' + value + ', ';
+  }
+  if (fermenterArgs) {
+    fermenterArgs = '(' + fermenterArgs.trim().slice(0, -1) + ')';
+  }
+
   const query = {
-    query: "query getFermenters {fermenters {name, id, description, type, units, volume, isActive, isAvailable } }"
+    query: "query getFermenters {fermenters" + fermenterArgs + " {name, id, description, type, units, volume, isActive, isAvailable } }"
   }
   return makeRequest(query, token, url).then((response) => response.json());
 }
@@ -94,7 +103,7 @@ export function getFermenter(fermenterId, token, url = apiUrl) {
 
 export function createFermenter(fermenter, token, url=apiUrl) {
   const mutation = {
-    query: "mutation putFermenter($fermenter: FermenterInput) {createFermenter(fermenter: $fermenter) { id }}",
+    query: "mutation putFermenter($fermenter: FermenterInput!) {createFermenter(fermenter: $fermenter) { id }}",
     variables: {
       "fermenter": fermenter
       // "name": fermenter.name,
@@ -114,6 +123,16 @@ export function updateFermenter(fermenterId, fermenter, token, url=apiUrl) {
     variables: {
       "id": fermenterId,
       "fermenter": fermenter
+    }
+  };
+  return makeRequest(mutation, token, url).then((response) => response.json());
+}
+
+export function createBatch(batch, token, url=apiUrl) {
+  const mutation = {
+    query: "mutation createBatch($batch: BatchInput!) {createBatch(batch: $batch) { id }}",
+    variables: {
+      "batch": batch
     }
   };
   return makeRequest(mutation, token, url).then((response) => response.json());

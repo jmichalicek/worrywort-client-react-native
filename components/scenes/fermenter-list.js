@@ -41,7 +41,7 @@ class FermenterList extends Component {
   // batches in Redux store version
   componentWillReceiveProps(nextProps) {
     //TODO: May need to be smarter about requesting fermenters.   Maybe a "shouldRequest"
-    if (nextProps.auth.jwt && !this.state.isRequesting && this.props.fermenters.length < 1) {
+    if (nextProps.auth.jwt && !this.state.isRequesting && this.state.fermenters.length < 1) {
       this.loadFermenters(nextProps.auth.jwt);
     }
   }
@@ -81,7 +81,6 @@ class FermenterList extends Component {
   }
 
   loadFermenters(jwt = null) {
-    console.log('LOADING FERMENTERS');
     this.setState({isRequesting: true});
     jwt = jwt || this.props.auth.jwt;
     getAllFermenters(jwt).then((responseJson) => {

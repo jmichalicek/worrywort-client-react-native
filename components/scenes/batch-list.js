@@ -1,14 +1,25 @@
 import React, { Component,  } from 'react';
-import { View, Text, ListView } from 'react-native';
+import { View, Text, ListView, Button, RefreshControl, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
+import { NavigationActions } from 'react-navigation';
+import { styles as s } from "react-native-style-tachyons";
+
 import Row from '../batch-list-row';
 import { batchListRequest, batchListReceived, requestBatchList } from '../../actions';
 import { getAllBatches } from '../../utils/api-client';
+import { ViewRoutes } from '../../constants';
 
 class BatchList extends Component {
-  static navigationOptions = {
+
+  static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Your Batches',
-  };
+    headerRight: <Button title="Add" onPress={() =>{
+      navigation.dispatch(
+        NavigationActions.navigate(
+          { routeName: ViewRoutes.BATCH_EDIT }
+        )
+      )}}/>
+  });
 
   constructor(props) {
     super(props);
@@ -17,6 +28,7 @@ class BatchList extends Component {
       batches: [],
       dataSource: ds.cloneWithRows([]) , // use initialState for this?
       isRequesting: false,
+      shouldRequestBatches: false
     };
   }
 
@@ -31,7 +43,7 @@ class BatchList extends Component {
     // mounting happens different with react-native 0.44 and react-navigation
     // so we need to look these up here or maybe just do it in render?  that way
     // a little loading thing could be displayed
-    if (this.props.auth.jwt && !this.state.isRequesting && this.props.shouldRequestBatches) {
+    if (this.props.auth.jwt && !this.state.isRequesting) {
       this.loadBatches(this.props.auth.jwt);
     }
   }
@@ -41,7 +53,7 @@ class BatchList extends Component {
     return (
       <View>
         <Text>Your Batches:</Text>
-        <ListView dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
+        <ListView enableEmptySections={true} dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
       </View>);
   }
 
@@ -59,11 +71,13 @@ class BatchList extends Component {
 }
 
 const mapStateToProps = (state, props) => {
-  // return {
-  //   auth: state.auth,
-  //   navigation: state.navigation
-  // }
-  return {...state, ...props.navigation.state.params};
+  // TODO: Am I doing this wrong?  navigation seems to always be null
+  // TODO: Do I even need react-navigation integrated with redux?
+  return {
+    auth: state.auth,
+    navigation: state.navigation,
+    ...props.navigation.state.params
+  }
 };
 
 export default connect(mapStateToProps)(BatchList);
