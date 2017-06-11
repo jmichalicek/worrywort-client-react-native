@@ -312,7 +312,7 @@ class EditBatch extends Component {
   }
 
   render() {
-    const textInputStyle = [s.b__gray, s.h3, s.mb3, s.ba];
+    const textInputStyle = [s.b__gray, s.h3, s.mb3, s.ba, s.black];
     const multilineTextInputStyle = [s.b__gray, s.ba, s.tl, {textAlignVertical:  'top'}];
     const saveMessageStyle = [s.ma1, s.mb2, s.jcfs, s.pa2, s.h3, s.mb1, s.tc];
 
@@ -521,7 +521,7 @@ class EditBatch extends Component {
   loadFermenters = (jwt = null) => {
     this.setState({isRequestingFermenters: true});
     jwt = jwt || this.props.auth.jwt;
-    getAllFermenters(jwt, filters={isAvailable: true, isActive: true}).then((responseJson) => {
+    getAllFermenters(jwt, filters={isActive: true}).then((responseJson) => {
       const retrievedFermenters = responseJson.data.fermenters.slice();
       this.setState({
         fermenters: retrievedFermenters,
