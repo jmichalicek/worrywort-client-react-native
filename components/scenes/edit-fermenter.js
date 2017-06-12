@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TextInput, Button, Picker, Switch, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, Button, Picker, Switch, ScrollView } from 'react-native';
 
 import { styles as s } from "react-native-style-tachyons";
 
@@ -201,34 +201,39 @@ class EditFermenter extends Component {
 
     // TODO: better handling of fermenter type choices
     return (
-      <View>
+      // ScrollView lets the keyboard push this out of the way
+      <ScrollView style={[s.ph1, s.mb2]}>
         <Text>{this.isUpdating() ? "Editing" : "Adding" }</Text>
         { statusMessage }
         <Text>Name</Text>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          style={textInputStyle}
           onChangeText={this.setNameFromInput}
           value={this.state.fermenter.name}
         />
         <Text>Fermenter Type</Text>
-        <Picker selectedValue={this.state.fermenter.type}
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
-          onValueChange={this.setFermenterType}>
-          <Picker.Item label="Bucket" value={FermenterTypes.BUCKET} />
-          <Picker.Item label="Carboy" value={FermenterTypes.CARBOY} />
-          <Picker.Item label="Conical" value={FermenterTypes.CONICAL} />
-        </Picker>
+        <View style={textInputStyle}>
+          <Picker selectedValue={this.state.fermenter.type}
+            style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+            onValueChange={this.setFermenterType}>
+            <Picker.Item label="Bucket" value={FermenterTypes.BUCKET} />
+            <Picker.Item label="Carboy" value={FermenterTypes.CARBOY} />
+            <Picker.Item label="Conical" value={FermenterTypes.CONICAL} />
+          </Picker>
+        </View>
 
         <Text>Volume Units</Text>
-        <Picker selectedValue={this.state.fermenter.units}
-          onValueChange={this.setFermenterUnits}>
-          <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
-          <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
-        </Picker>
+        <View style={textInputStyle}>
+          <Picker selectedValue={this.state.fermenter.units}
+            onValueChange={this.setFermenterUnits}>
+            <Picker.Item label="Gallons" value={VolumeUnits.GALLONS} />
+            <Picker.Item label="Liters" value={VolumeUnits.LITERS} />
+          </Picker>
+        </View>
 
         <Text>Volume</Text>
         <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1, }}
+          style={textInputStyle}
           onChangeText={this.setFermenterVolume}
           value={this.state.fermenter.volume}
           keyboardType='numeric'
@@ -236,7 +241,7 @@ class EditFermenter extends Component {
 
         <Text>Short Description</Text>
         <TextInput
-          style={{height: 80, borderColor: 'gray', borderWidth: 1, }}
+          style={multilineTextInputStyle}
           onChangeText={this.setDescription}
           value={this.state.fermenter.description}
           multiline={true}
@@ -246,7 +251,7 @@ class EditFermenter extends Component {
         <Switch onValueChange={this.setIsActive}
           style={{marginBottom: 10}}
           value={this.state.fermenter.isActive} />
-      </View>);
+      </ScrollView>);
   }
 
   loadFermenter(jwt = null, fermenterId = null) {
