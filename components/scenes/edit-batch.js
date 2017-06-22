@@ -60,16 +60,21 @@ class EditBatch extends Component {
       bottledVolume: null,
     }
 
+    // TODO: I am sure there is a cleaner way to do this... or just go to using batch.fermenter as retrieved
+    // from graphql as suggested in other TODOs as well.
+    if (this.props.batch && this.props.batch.fermenter && this.props.batch.fermenter.id) {
+      defaultBatch.fermenterId = this.props.batch.fermenter.id;
+    }
     // need to copy this object
-    let b = this.props.batch || defaultBatch;
+    // let b = this.props.batch || defaultBatch;
     // TODO: improve this whole thing to use state.batch as an immutablejs object
     this.state = {
-      batch: Object.assign({}, b),
+      batch: Object.assign({}, defaultBatch, this.props.batch),
       requestingBatch: false,
       saveSuccess: false,
       saveError: false,
       editingExisting: !!(this.props.batch && this.props.batch.id),
-      batchId: b.id,
+      batchId: null,
       fermenters: [],
     };
   }

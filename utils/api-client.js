@@ -61,8 +61,12 @@ export function login(username, password, url = apiUrl) {
 }
 
 export function getAllBatches(token, url = apiUrl) {
+  const lookupProperties = "name, brewDate, insertedAt, updatedAt, estimatedBottlingDate," +
+    " estimatedDrinkableDate, fermenterVolume, finalGravity, recipeUrl, secondaryFermenterDate," +
+    " brewNotes, tastingNotes, volumeUnits, boilVolume, bottleDate, bottledVolume, originalGravity, fermenter { id }"
+
   const query = {
-    query: "query getBatches {batches {name, brew_date} }"
+    query: `query getBatches {batches { ${lookupProperties}} }`
   }
 
   return fetch(url, {

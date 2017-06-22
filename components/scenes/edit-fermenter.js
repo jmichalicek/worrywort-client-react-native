@@ -28,7 +28,7 @@ class EditFermenter extends Component {
     let f = this.props.fermenter || defaultFermenter;
     // TODO: improve this whole thing to use state.fermenter as an immutablejs object
     this.state = {
-      fermenter: Object.assign({}, f),
+      fermenter: Object.assign({}, defaultFermenter, this.props.fermenter),
       requestingFermenter: false,
       saveSuccess: false,
       saveError: false,
