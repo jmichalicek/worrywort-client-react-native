@@ -48,13 +48,24 @@ class BatchList extends Component {
     }
   }
 
+  _renderListRow(rowData) {
+    return <Row batch={rowData} />
+  }
+
   render() {
     var dataSource = this.state.dataSource;
+    const refreshControl = <RefreshControl refreshing={this.state.isRequesting}
+       onRefresh={this._onRefresh} enabled={true} progressViewOffset={-15}  />;
     return (
-      <View>
-        <Text>Your Batches:</Text>
-        <ListView enableEmptySections={true} dataSource={dataSource} renderRow={(rowData) => <Row {...rowData} />} />
-      </View>);
+      <ScrollView refreshControl={refreshControl}>
+        <ListView enableEmptySections={true} dataSource={dataSource} renderRow={this._renderListRow} />
+      </ScrollView>
+    );
+  }
+
+  _onRefresh = () => {
+    this.setState({isRequesting: true});
+    this.loadBatches(this.props.auth.jwt);
   }
 
   loadBatches(jwt = null) {
@@ -64,7 +75,8 @@ class BatchList extends Component {
       this.setState({
         batches: retrievedBatches,
         dataSource: this.state.dataSource.cloneWithRows(retrievedBatches),
-        shouldRequestBatches: false
+        shouldRequestBatches: false,
+        isRequesting: false
       });
     });
   }
